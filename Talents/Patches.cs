@@ -246,7 +246,7 @@ namespace Talents
     }
     public class ETalentsPlus
     {
-        public const int HEALTH_BOOST_3 = (int)ETalents.MAX + 1;
+        public const int HEALTH_BOOST_3 = (int)ETalents.MAX + 1;    // 64
         public const int MAX = (int)ETalents.MAX + 2;
     }
 }

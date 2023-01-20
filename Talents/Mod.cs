@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using PulsarModLoader;
+using PulsarModLoader.Chat.Commands.CommandRouter;
 using PulsarModLoader.Content.Components.Reactor;
 using System;
 using System.Collections.Generic;
@@ -134,6 +135,45 @@ namespace Talents
             }
             cachedTalentsForSpecies[RaceID] = list;
             return list;
+        }
+    }
+    public class Command : ChatCommand
+    {
+        public override string[] CommandAliases() => new string[] { "gettalents" };
+
+        public override string Description() => "Display All Talents";
+
+        public override void Execute(string arguments)
+        {
+            for (int i = 0; i < ETalentsPlus.MAX + 1; i++)
+            {
+                TalentInfo talent = PLGlobal.GetTalentInfoForTalentType((ETalents)i);
+                if (talent != null)
+                {
+                    PulsarModLoader.Utilities.Logger.Info($"[TALENTS] {i} - {talent.Name} - ID: {talent.TalentID}");
+                }
+            }
+        }
+    }
+    public class Command2 : ChatCommand
+    {
+        public override string[] CommandAliases() => new string[] { "getlocaltalents" };
+
+        public override string Description() => "Display LOCAL Talents";
+
+        public override void Execute(string arguments)
+        {
+            PLPlayer Player = PLNetworkManager.Instance.LocalPlayer;
+            int Count = 0;
+            foreach (int i in Player.Talents)
+            {
+                TalentInfo talent = PLGlobal.GetTalentInfoForTalentType((ETalents)Count);
+                if (talent != null)
+                {
+                    PulsarModLoader.Utilities.Logger.Info($"[TALENTS] {talent.Name} - ID: {talent.TalentID} - LEVEL: {i}");
+                }
+                Count++;
+            }
         }
     }
 }

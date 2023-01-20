@@ -8,14 +8,24 @@ namespace Talents
 {
     internal class TalentCreation
     {
-        public static Dictionary<int, List<ETalents>> cachedTalentsForClass = new Dictionary<int, List<ETalents>>();
-        public static List<ETalents> TalentsForClass(int inClassID)
+        public static Dictionary<int, Dictionary<int, List<ETalents>>> cachedTalentsForClassSpecies = new Dictionary<int, Dictionary<int, List<ETalents>>>(5);
+        public static List<ETalents> TalentsForClassSpecies(PLPlayer pLPlayer)
         {
-            if (cachedTalentsForClass.ContainsKey(inClassID))
+            int ClassID = pLPlayer.GetClassID();
+            int RaceID = pLPlayer.RaceID; // 0 = Human, 1 = Sylvassi, 2 = Robot
+            if (RaceID == 0 && !pLPlayer.Gender_IsMale) RaceID = 3; // Makes Female as RaceID 3 (Local)
+            if (cachedTalentsForClassSpecies.ContainsKey(ClassID) && cachedTalentsForClassSpecies[ClassID].ContainsKey(RaceID))
             {
-                return cachedTalentsForClass[inClassID];
+                return cachedTalentsForClassSpecies[ClassID][RaceID];
             }
             List<ETalents> list = new List<ETalents>();
+            list.Add(ETalents.HEALTH_BOOST);
+            list.Add(ETalents.ARMOR_BOOST);
+            list.Add(ETalents.HEALTH_BOOST_2);
+            list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_3);
+            list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_4);
+            list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_5);
+            list.Add(ETalents.ARMOR_BOOST_2);
             list.Add(ETalents.PISTOL_DMG_BOOST);
             list.Add(ETalents.QUICK_RESPAWN);
             list.Add(ETalents.ADVANCED_OPERATOR);
@@ -34,7 +44,24 @@ namespace Talents
             list.Add(ETalents.SCI_SCANNER_RESEARCH_MAT);
             list.Add(ETalents.ITEM_UPGRADER_OPERATOR);
             list.Add(ETalents.COMPONENT_UPGRADER_OPERATOR);
-            switch (inClassID)
+            switch (RaceID)
+            {
+                case 0:     // Human Male
+                    list.Add(ETalents.OXYGEN_TRAINING);
+                    list.Add((ETalents)ETalentsPlus.HUMAN_M);
+                    break;
+                case 3:     // Human Female
+                    list.Add(ETalents.OXYGEN_TRAINING);
+                    list.Add((ETalents)ETalentsPlus.HUMAN_F);
+                    break;
+                case 1:     // Sylvassi
+                    list.Add((ETalents)ETalentsPlus.SYLVASSI);
+                    break;
+                case 2:     // Robot
+                    list.Add((ETalents)ETalentsPlus.ROBOT);
+                    break;
+            }
+            switch (ClassID)
             {
                 case 0:
                     list.Add(ETalents.CAP_CREW_SPEED_BOOST);
@@ -44,6 +71,17 @@ namespace Talents
                     list.Add(ETalents.CAP_INTIMIDATION);
                     list.Add(ETalents.CAP_SCREEN_DEFENSE);
                     list.Add(ETalents.CAP_SCREEN_SAFETY);
+                    switch (RaceID)
+                    {
+                        case 0:     // Human Male
+                            break;
+                        case 3:     // Human Female
+                            break;
+                        case 1:     // Sylvassi
+                            break;
+                        case 2:     // Robot
+                            break;
+                    }
                     break;
                 case 1:
                     list.Add(ETalents.PIL_SHIP_TURNING);
@@ -51,6 +89,17 @@ namespace Talents
                     list.Add(ETalents.PIL_REDUCE_SYS_DAMAGE);
                     list.Add(ETalents.PIL_REDUCE_HULL_DAMAGE);
                     list.Add(ETalents.PIL_KEEN_EYES);
+                    switch (RaceID)
+                    {
+                        case 0:     // Human Male
+                            break;
+                        case 3:     // Human Female
+                            break;
+                        case 1:     // Sylvassi
+                            break;
+                        case 2:     // Robot
+                            break;
+                    }
                     break;
                 case 2:
                     list.Add(ETalents.SCI_HEAL_NEARBY);
@@ -60,6 +109,17 @@ namespace Talents
                     list.Add(ETalents.SCI_RESEARCH_SPECIALTY);
                     list.Add(ETalents.SCI_PROBE_COOLDOWN);
                     list.Add(ETalents.SCI_PROBE_XP);
+                    switch (RaceID)
+                    {
+                        case 0:     // Human Male
+                            break;
+                        case 3:     // Human Female
+                            break;
+                        case 1:     // Sylvassi
+                            break;
+                        case 2:     // Robot
+                            break;
+                    }
                     break;
                 case 3:
                     list.Add(ETalents.WPNS_TURRET_BOOST);
@@ -71,6 +131,17 @@ namespace Talents
                     list.Add(ETalents.WPN_SCREEN_HACKER);
                     list.Add(ETalents.WPN_AMMO_BOOST);
                     list.Add(ETalents.E_TURRET_COOLING_CREW_WEAPONS);
+                    switch (RaceID)
+                    {
+                        case 0:     // Human Male
+                            break;
+                        case 3:     // Human Female
+                            break;
+                        case 1:     // Sylvassi
+                            break;
+                        case 2:     // Robot
+                            break;
+                    }
                     break;
                 case 4:
                     list.Add(ETalents.ENG_COOLANT_MIX_CUSTOM);
@@ -82,47 +153,34 @@ namespace Talents
                     list.Add(ETalents.ENG_COREPOWERBOOST);
                     list.Add(ETalents.ENG_CORECOOLINGBOOST);
                     list.Add(ETalents.E_TURRET_COOLING_CREW_ENGINEER);
+                    switch (RaceID)
+                    {
+                        case 0:     // Human Male
+                            break;
+                        case 3:     // Human Female
+                            break;
+                        case 1:     // Sylvassi
+                            break;
+                        case 2:     // Robot
+                            break;
+                    }
                     break;
             }
-            cachedTalentsForClass[inClassID] = list;
-            return list;
-        }
-
-        public static Dictionary<int, List<ETalents>> cachedTalentsForSpecies = new Dictionary<int, List<ETalents>>();
-        public static List<ETalents> TalentsForSpecies(PLPlayer Player)
-        {
-            bool Gender_IsMale = Player.Gender_IsMale; // True if not Human
-            int RaceID = Player.RaceID; // 0 = Human, 1 = Sylvassi, 2 = Robot
-            if (RaceID == 0 && Gender_IsMale) RaceID = 3; // Makes Female as RaceID 3 (Local)
-            if (cachedTalentsForSpecies.ContainsKey(RaceID))
+            if (cachedTalentsForClassSpecies.ContainsKey(ClassID))
             {
-                return cachedTalentsForSpecies[RaceID];
+                if (cachedTalentsForClassSpecies[ClassID].ContainsKey(RaceID))
+                {
+                    cachedTalentsForClassSpecies[ClassID][RaceID] = list;
+                }
+                else
+                {
+                    cachedTalentsForClassSpecies[ClassID].Add(RaceID, list);
+                }
             }
-            List<ETalents> list = new List<ETalents>();
-            // Default Species Talents
-            list.Add(ETalents.HEALTH_BOOST);
-            list.Add(ETalents.ARMOR_BOOST);
-            list.Add(ETalents.HEALTH_BOOST_2);
-            list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_3);
-            list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_4);
-            list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_5);
-            list.Add(ETalents.ARMOR_BOOST_2);
-            switch (RaceID)
+            else
             {
-                case 0:     // Human Male
-                    list.Add(ETalents.OXYGEN_TRAINING);
-                    break;
-                case 3:     // Human Female
-                    list.Add(ETalents.OXYGEN_TRAINING);
-                    break;
-                case 1:     // Sylvassi
-                    //list.Add(ETalents.PIL_SHIP_TURNING);
-                    break;
-                case 2:     // Robot
-                    //list.Add(ETalents.PIL_SHIP_TURNING);
-                    break;
+                cachedTalentsForClassSpecies.Add(ClassID, new Dictionary<int, List<ETalents>> { { RaceID, list } });
             }
-            cachedTalentsForSpecies[RaceID] = list;
             return list;
         }
     }

@@ -63,14 +63,8 @@ namespace Talents
         private static IEnumerator SendTalentsToPhotonTargets(PLPlayer __instance, int inClassID, PhotonTargets inTargets, bool sendAll = false, PhotonPlayer inPlayer = null)
         {
             int talentID = 0;
-            //PulsarModLoader.Utilities.Logger.Info($"[TALENTS] - SendTalentsToPhotonTargets - inPlayer = null {inPlayer == null}");
-            List<ETalents> TalentList = TalentCreation.TalentsForClass(inClassID);
-            if (inPlayer != null)
-            {
-                //PulsarModLoader.Utilities.Logger.Info($"[TALENTS] - SendTalentsToPhotonTargets - PLPlayer = null {PLServer.GetPlayerForPhotonPlayer(inPlayer) == null}");
-                //PulsarModLoader.Utilities.Logger.Info($"[TALENTS] - SendTalentsToPhotonTargets - ClassID = {inClassID}");
-                TalentList.AddRange(TalentCreation.TalentsForSpecies(PLServer.GetPlayerForPhotonPlayer(inPlayer)));
-            }
+            PulsarModLoader.Utilities.Logger.Info($"[TALENTS] - SendTalentsToPhotonTargets: inPlayer = null {inPlayer == null} | {inClassID}");
+            List<ETalents> TalentList = TalentCreation.TalentsForClassSpecies(PLServer.GetPlayerForPhotonPlayer(inPlayer));
             while (talentID < ETalentsPlus.MAX && talentID < __instance.Talents.Length)
             {
                 if (talentID == (int)ETalents.MAX)
@@ -203,8 +197,7 @@ namespace Talents
         }
         public static List<ETalents> Replacement(PLTabMenu instance, PLPlayer pLPlayer)
         {
-            List<ETalents> Talents = TalentCreation.TalentsForClass(pLPlayer.GetClassID());
-            Talents.AddRange(TalentCreation.TalentsForSpecies(pLPlayer));
+            List<ETalents> Talents = TalentCreation.TalentsForClassSpecies(pLPlayer);
             return Talents;
         }
     }

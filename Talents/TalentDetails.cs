@@ -45,19 +45,16 @@ namespace Talents
                     talentInfo.Name = "Pistoleer";
                     talentInfo.Desc = "Boosts pistol damage by 10% per rank";
                     talentInfo.MaxRank = 5;
-                    talentInfo.ClassID = -1;
                     break;
                 case (int)ETalents.QUICK_RESPAWN:
                     talentInfo.Name = "Custom DNA";
                     talentInfo.Desc = "Decreases respawn time by 12% per rank";
                     talentInfo.MaxRank = 4;
-                    talentInfo.ClassID = -1;
                     break;
                 case (int)ETalents.ADVANCED_OPERATOR:
                     talentInfo.Name = "Advanced Operator";
                     talentInfo.Desc = "Allows use of the main turret systems";
                     talentInfo.MaxRank = 1;
-                    talentInfo.ClassID = -1;
                     break;
                 case (int)ETalents.CAP_CREW_SPEED_BOOST:
                     talentInfo.Name = "Crew Marathon Training";
@@ -183,7 +180,6 @@ namespace Talents
                     talentInfo.Name = "Custom Jetpack Fuel";
                     talentInfo.Desc = "Increases your jetpack's recharge rate by 25% per rank";
                     talentInfo.MaxRank = 4;
-                    talentInfo.ClassID = -1;
                     talentInfo.ResearchCost[0] = 1;
                     talentInfo.WarpsToResearch = 2;
                     break;
@@ -199,7 +195,6 @@ namespace Talents
                     talentInfo.Name = "Strength Boost";
                     talentInfo.Desc = "Increases carrying capacity by 10 per rank";
                     talentInfo.MaxRank = 4;
-                    talentInfo.ClassID = -1;
                     break;
                 case (int)ETalents.CAP_ARMOR_BOOST:
                     talentInfo.Name = "Crew Heavy Armor Training";
@@ -232,7 +227,6 @@ namespace Talents
                     talentInfo.Name = "Turret Zoom";
                     talentInfo.Desc = "Increases the zoom in turrets by 15% per rank";
                     talentInfo.MaxRank = 3;
-                    talentInfo.ClassID = -1;
                     talentInfo.ResearchCost[3] = 1;
                     talentInfo.WarpsToResearch = 2;
                     break;
@@ -240,7 +234,6 @@ namespace Talents
                     talentInfo.Name = "Atrium Healing Enhancement";
                     talentInfo.Desc = "Increases the rate you heal in Atriums by 40% per rank";
                     talentInfo.MaxRank = 3;
-                    talentInfo.ClassID = -1;
                     talentInfo.ResearchCost[0] = 3;
                     talentInfo.WarpsToResearch = 3;
                     break;
@@ -248,7 +241,6 @@ namespace Talents
                     talentInfo.Name = "Cloaked DNA";
                     talentInfo.Desc = "Causes enemy atriums to heal you";
                     talentInfo.MaxRank = 1;
-                    talentInfo.ClassID = -1;
                     talentInfo.ResearchCost[0] = 1;
                     talentInfo.ResearchCost[4] = 2;
                     talentInfo.ResearchCost[5] = 2;
@@ -258,7 +250,6 @@ namespace Talents
                     talentInfo.Name = "Scanner Mode: Research Materials";
                     talentInfo.Desc = "Allows the scanner to detect research materials";
                     talentInfo.MaxRank = 1;
-                    talentInfo.ClassID = -1;
                     talentInfo.ResearchCost[3] = 3;
                     talentInfo.ResearchCost[4] = 1;
                     talentInfo.WarpsToResearch = 4;
@@ -267,7 +258,6 @@ namespace Talents
                     talentInfo.Name = "Scanner Mode: Item Pickups";
                     talentInfo.Desc = "Allows the scanner to detect item pickups";
                     talentInfo.MaxRank = 1;
-                    talentInfo.ClassID = -1;
                     talentInfo.ResearchCost[3] = 1;
                     talentInfo.WarpsToResearch = 2;
                     break;
@@ -293,7 +283,6 @@ namespace Talents
                     talentInfo.Name = "Encumbered Sprint";
                     talentInfo.Desc = "Allows sprinting while encumbered";
                     talentInfo.MaxRank = 1;
-                    talentInfo.ClassID = -1;
                     talentInfo.ResearchCost[1] = 1;
                     talentInfo.WarpsToResearch = 2;
                     break;
@@ -319,7 +308,6 @@ namespace Talents
                     talentInfo.Name = "Anti-Radiation Injection";
                     talentInfo.Desc = "Radiation damage is 8% less per rank";
                     talentInfo.MaxRank = 5;
-                    talentInfo.ClassID = -1;
                     talentInfo.ResearchCost[1] = 3;
                     talentInfo.ResearchCost[3] = 1;
                     talentInfo.WarpsToResearch = 2;
@@ -405,7 +393,6 @@ namespace Talents
                     talentInfo.Name = "Sensor Dish Certification";
                     talentInfo.Desc = "Allows use of the sensor dish";
                     talentInfo.MaxRank = 1;
-                    talentInfo.ClassID = -1;
                     break;
                 case (int)ETalents.SCI_PROBE_XP:
                     talentInfo.Name = "Probe Specialty: XP Gain";
@@ -427,13 +414,11 @@ namespace Talents
                     talentInfo.Name = "Item Upgrader Operator";
                     talentInfo.Desc = "Allows use of the Item Upgrader";
                     talentInfo.MaxRank = 1;
-                    talentInfo.ClassID = -1;
                     break;
                 case (int)ETalents.COMPONENT_UPGRADER_OPERATOR:
                     talentInfo.Name = "Component Upgrader Operator";
                     talentInfo.Desc = "Allows use of the Component Upgrader";
                     talentInfo.MaxRank = 1;
-                    talentInfo.ClassID = -1;
                     break;
                 case (int)ETalents.ARMOR_BOOST:
                     talentInfo.Name = "Armor Boost";
@@ -505,6 +490,26 @@ namespace Talents
                     talentInfo.ExtendsTalent = (ETalents)ETalentsPlus.HEALTH_BOOST_4;
                     talentInfo.MinLevel = 21;
                     break;
+                case ETalentsPlus.HUMAN_M:
+                    talentInfo.Name = "(DEBUG) HUMAN MALE";
+                    talentInfo.Desc = "DEBUG";
+                    talentInfo.MaxRank = 1;
+                    break;
+                case ETalentsPlus.HUMAN_F:
+                    talentInfo.Name = "(DEBUG) HUMAN FEMALE";
+                    talentInfo.Desc = "DEBUG";
+                    talentInfo.MaxRank = 1;
+                    break;
+                case ETalentsPlus.SYLVASSI:
+                    talentInfo.Name = "(DEBUG) SYLVASSI";
+                    talentInfo.Desc = "DEBUG";
+                    talentInfo.MaxRank = 1;
+                    break;
+                case ETalentsPlus.ROBOT:
+                    talentInfo.Name = "(DEBUG) ROBOT";
+                    talentInfo.Desc = "DEBUG";
+                    talentInfo.MaxRank = 1;
+                    break;
             }
             CachedTalentInfos.Add((int)inTalent, talentInfo);
             __result = talentInfo;
@@ -516,6 +521,10 @@ namespace Talents
         public const int HEALTH_BOOST_3 = (int)ETalents.MAX + 1;    // 64
         public const int HEALTH_BOOST_4 = (int)ETalents.MAX + 2;
         public const int HEALTH_BOOST_5 = (int)ETalents.MAX + 3;
-        public const int MAX = (int)ETalents.MAX + 4;
+        public const int HUMAN_M = (int)ETalents.MAX + 4;
+        public const int HUMAN_F = (int)ETalents.MAX + 5;
+        public const int SYLVASSI = (int)ETalents.MAX + 6;
+        public const int ROBOT = (int)ETalents.MAX + 7;
+        public const int MAX = (int)ETalents.MAX + 8;
     }
 }

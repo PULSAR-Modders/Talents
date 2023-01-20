@@ -45,11 +45,15 @@ namespace TalentsImplements
         }
         public static float Replacement(PLPawn Instance, float MaxHealth, PLPlayer pLPlayer)
         {
-            if (pLPlayer.Talents.Length < ETalentsPlus.HEALTH_BOOST_3 + 1)
+            if (pLPlayer.Talents.Length != ETalentsPlus.MAX + 1)
             {
                 return MaxHealth;
             }
-            return MaxHealth += (float)pLPlayer.Talents[ETalentsPlus.HEALTH_BOOST_3] * 20f;
+            float maxHealth = MaxHealth;
+            maxHealth += (float)pLPlayer.Talents[ETalentsPlus.HEALTH_BOOST_3] * 20f;
+            maxHealth += (float)pLPlayer.Talents[ETalentsPlus.HEALTH_BOOST_4] * 20f;
+            maxHealth += (float)pLPlayer.Talents[ETalentsPlus.HEALTH_BOOST_5] * 20f;
+            return maxHealth;
         }
     }
 }

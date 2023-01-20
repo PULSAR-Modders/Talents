@@ -240,6 +240,20 @@ namespace Talents
                     talentInfo.ExtendsTalent = ETalents.HEALTH_BOOST_2;
                     talentInfo.MinLevel = 11;
                     break;
+                case ETalentsPlus.HEALTH_BOOST_4:
+                    talentInfo.Name = "Health Boost IV";
+                    talentInfo.Desc = "+20 to max health per rank";
+                    talentInfo.MaxRank = 5;
+                    talentInfo.ExtendsTalent = (ETalents) ETalentsPlus.HEALTH_BOOST_3;
+                    talentInfo.MinLevel = 16;
+                    break;
+                case ETalentsPlus.HEALTH_BOOST_5:
+                    talentInfo.Name = "Health Boost V";
+                    talentInfo.Desc = "+20 to max health per rank";
+                    talentInfo.MaxRank = 5;
+                    talentInfo.ExtendsTalent = (ETalents)ETalentsPlus.HEALTH_BOOST_4;
+                    talentInfo.MinLevel = 21;
+                    break;
             }
             CachedTalentInfos.Add((int)inTalent, talentInfo);
         }
@@ -247,6 +261,8 @@ namespace Talents
     public class ETalentsPlus
     {
         public const int HEALTH_BOOST_3 = (int)ETalents.MAX + 1;    // 64
-        public const int MAX = (int)ETalents.MAX + 2;
+        public const int HEALTH_BOOST_4 = (int)ETalents.MAX + 2;    // 64
+        public const int HEALTH_BOOST_5 = (int)ETalents.MAX + 3;    // 64
+        public const int MAX = (int)ETalents.MAX + 4;
     }
 }

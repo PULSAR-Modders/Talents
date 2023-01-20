@@ -116,6 +116,8 @@ namespace Talents
             list.Add(ETalents.ARMOR_BOOST);
             list.Add(ETalents.HEALTH_BOOST_2);
             list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_3);
+            list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_4);
+            list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_5);
             list.Add(ETalents.ARMOR_BOOST_2);
             list.Add(ETalents.OXYGEN_TRAINING);
             switch (RaceID)

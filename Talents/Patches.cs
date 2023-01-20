@@ -251,7 +251,7 @@ namespace Talents
                     talentInfo.Name = "Health Boost V";
                     talentInfo.Desc = "+20 to max health per rank";
                     talentInfo.MaxRank = 5;
-                    talentInfo.ExtendsTalent = (ETalents)ETalentsPlus.HEALTH_BOOST_4;
+                    talentInfo.ExtendsTalent = (ETalents) ETalentsPlus.HEALTH_BOOST_4;
                     talentInfo.MinLevel = 21;
                     break;
             }

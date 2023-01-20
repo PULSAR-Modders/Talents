@@ -1,4 +1,5 @@
 ﻿using CodeStage.AntiCheat.ObscuredTypes;
+using ExitGames.Demos.DemoAnimator;
 using HarmonyLib;
 using System;
 using System.Collections;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -61,13 +63,13 @@ namespace Talents
         private static IEnumerator SendTalentsToPhotonTargets(PLPlayer __instance, int inClassID, PhotonTargets inTargets, bool sendAll = false, PhotonPlayer inPlayer = null)
         {
             int talentID = 0;
-            PulsarModLoader.Utilities.Logger.Info($"[TALENTS] - SendTalentsToPhotonTargets - inPlayer = null {inPlayer == null}");
-            List<ETalents> TalentList = Mod.TalentsForClass(inClassID);
+            //PulsarModLoader.Utilities.Logger.Info($"[TALENTS] - SendTalentsToPhotonTargets - inPlayer = null {inPlayer == null}");
+            List<ETalents> TalentList = TalentCreation.TalentsForClass(inClassID);
             if (inPlayer != null)
             {
-                PulsarModLoader.Utilities.Logger.Info($"[TALENTS] - SendTalentsToPhotonTargets - PLPlayer = null {PLServer.GetPlayerForPhotonPlayer(inPlayer) == null}");
-                PulsarModLoader.Utilities.Logger.Info($"[TALENTS] - SendTalentsToPhotonTargets - ClassID = {inClassID}");
-                TalentList.AddRange(Mod.TalentsForSpecies(PLServer.GetPlayerForPhotonPlayer(inPlayer)));
+                //PulsarModLoader.Utilities.Logger.Info($"[TALENTS] - SendTalentsToPhotonTargets - PLPlayer = null {PLServer.GetPlayerForPhotonPlayer(inPlayer) == null}");
+                //PulsarModLoader.Utilities.Logger.Info($"[TALENTS] - SendTalentsToPhotonTargets - ClassID = {inClassID}");
+                TalentList.AddRange(TalentCreation.TalentsForSpecies(PLServer.GetPlayerForPhotonPlayer(inPlayer)));
             }
             while (talentID < ETalentsPlus.MAX && talentID < __instance.Talents.Length)
             {
@@ -201,68 +203,37 @@ namespace Talents
         }
         public static List<ETalents> Replacement(PLTabMenu instance, PLPlayer pLPlayer)
         {
-            List<ETalents> Talents = Mod.TalentsForClass(pLPlayer.GetClassID());
-            Talents.AddRange(Mod.TalentsForSpecies(pLPlayer));
+            List<ETalents> Talents = TalentCreation.TalentsForClass(pLPlayer.GetClassID());
+            Talents.AddRange(TalentCreation.TalentsForSpecies(pLPlayer));
             return Talents;
         }
     }
-
-    [HarmonyPatch(typeof(PLGlobal), "GetTalentInfoForTalentType")]
-    class GetTalentInfoForTalentType
+    
+    [HarmonyPatch(typeof(PLTabMenu), "UpdateTDs")]
+    class LockConflictingTalents
     {
-        protected static FieldInfo CachedTalentInfosInfo = AccessTools.Field(typeof(PLGlobal), "CachedTalentInfos");
-        public static void Prefix(PLGlobal __instance, ETalents inTalent)
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            Dictionary<int, TalentInfo> CachedTalentInfos = (Dictionary<int, TalentInfo>)CachedTalentInfosInfo.GetValue(__instance);
-            if (CachedTalentInfos.ContainsKey((int)inTalent))
+            List<CodeInstruction> target = new List<CodeInstruction>()
             {
-                return;
-            }
-            int VanillaTalentMaxType = Enum.GetValues(typeof(ETalents)).Length;
-            int eTalentsPlus = (int)inTalent - VanillaTalentMaxType;
-            if (eTalentsPlus < 0) return;
-            TalentInfo talentInfo = new TalentInfo();
-            talentInfo.ClassID = -1;
-            talentInfo.TalentID = (int)inTalent;
-            talentInfo.MaxRank = 3;
-            talentInfo.ResearchCost = new int[6];
-            talentInfo.WarpsToResearch = 3;
-            talentInfo.ExtendsTalent = ETalents.MAX;
-            talentInfo.MinLevel = 0;
-            switch ((int)inTalent)
+                new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(PLServer), "Instance")),
+                new CodeInstruction(OpCodes.Ldloc_S),       // etalents
+                new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(PLServer), "IsTalentUnlocked", new Type[] { typeof(ETalents) }))
+            };
+            int NextInstruction = FindSequence(instructions, target, CheckMode.NONNULL);
+            List<CodeInstruction> patch = new List<CodeInstruction>()
             {
-                default:
-                    return;
-                case ETalentsPlus.HEALTH_BOOST_3:
-                    talentInfo.Name = "Health Boost III";
-                    talentInfo.Desc = "+20 to max health per rank";
-                    talentInfo.MaxRank = 5;
-                    talentInfo.ExtendsTalent = ETalents.HEALTH_BOOST_2;
-                    talentInfo.MinLevel = 11;
-                    break;
-                case ETalentsPlus.HEALTH_BOOST_4:
-                    talentInfo.Name = "Health Boost IV";
-                    talentInfo.Desc = "+20 to max health per rank";
-                    talentInfo.MaxRank = 5;
-                    talentInfo.ExtendsTalent = (ETalents) ETalentsPlus.HEALTH_BOOST_3;
-                    talentInfo.MinLevel = 16;
-                    break;
-                case ETalentsPlus.HEALTH_BOOST_5:
-                    talentInfo.Name = "Health Boost V";
-                    talentInfo.Desc = "+20 to max health per rank";
-                    talentInfo.MaxRank = 5;
-                    talentInfo.ExtendsTalent = (ETalents) ETalentsPlus.HEALTH_BOOST_4;
-                    talentInfo.MinLevel = 21;
-                    break;
-            }
-            CachedTalentInfos.Add((int)inTalent, talentInfo);
+                new CodeInstruction(OpCodes.Ldarg_0),       // PLTabMenu Instance
+                instructions.ToList()[NextInstruction - 2], // etalents
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(LockConflictingTalents), "Replacement", new Type[] { typeof(PLTabMenu), typeof(ETalents) }))
+            };
+            return PatchBySequence(instructions, target, patch, PatchMode.REPLACE, CheckMode.NONNULL);
         }
-    }
-    public class ETalentsPlus
-    {
-        public const int HEALTH_BOOST_3 = (int)ETalents.MAX + 1;    // 64
-        public const int HEALTH_BOOST_4 = (int)ETalents.MAX + 2;
-        public const int HEALTH_BOOST_5 = (int)ETalents.MAX + 3;
-        public const int MAX = (int)ETalents.MAX + 4;
+        public static bool Replacement(PLTabMenu instance, ETalents etalents)
+        {
+            PLPlayer player = PLServer.Instance.GetPlayerFromPlayerID(instance.TalentsListSelectedPlayerID);
+            ETalents ConflictingTalent = PLGlobal.GetTalentInfoForTalentType(etalents).GetAdditionalData().ConflictTalent;
+            return PLServer.Instance.IsTalentUnlocked(etalents) && (ConflictingTalent == ETalents.MAX || player.Talents[(int)ConflictingTalent] == 0);
+        }
     }
 }

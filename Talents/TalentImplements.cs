@@ -10,7 +10,7 @@ using System.Linq;
 namespace TalentsImplements
 {
     [HarmonyPatch(typeof(PLPawn), "Update")]
-    class HEALTH_BOOST_3
+    class HEALTH_BOOST
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
@@ -38,7 +38,7 @@ namespace TalentsImplements
                 ListInstructions[NextInstruction],      // num11
                 ListInstructions[NextInstruction + 1],  // Instance
                 ListInstructions[NextInstruction + 2],  // GetPlayer
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(HEALTH_BOOST_3), "Replacement")),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(HEALTH_BOOST), "Replacement")),
                 ListInstructions[NextInstruction - 1]   // Store Value
             };
             return PatchBySequence(instructions, target, patch, PatchMode.AFTER, CheckMode.NEVER);

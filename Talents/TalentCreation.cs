@@ -16,7 +16,6 @@ namespace Talents
             if (ClassID != -1 && pLPlayer != null)
             {
                 RaceID = pLPlayer.RaceID; // 0 = Human, 1 = Sylvassi, 2 = Robot
-                if (RaceID == 0 && !pLPlayer.Gender_IsMale) RaceID = 3; // Makes Female as RaceID 3 (Local)
             }
             if (cachedTalentsForClassSpecies.ContainsKey(ClassID) && cachedTalentsForClassSpecies[ClassID].ContainsKey(RaceID))
             {
@@ -50,13 +49,9 @@ namespace Talents
             list.Add(ETalents.COMPONENT_UPGRADER_OPERATOR);
             switch (RaceID)
             {
-                case 0:     // Human Male
+                case 0:     // Human 
                     list.Add(ETalents.OXYGEN_TRAINING);
                     list.Add((ETalents)ETalentsPlus.HUMAN_M);
-                    break;
-                case 3:     // Human Female
-                    list.Add(ETalents.OXYGEN_TRAINING);
-                    list.Add((ETalents)ETalentsPlus.HUMAN_F);
                     break;
                 case 1:     // Sylvassi
                     list.Add((ETalents)ETalentsPlus.SYLVASSI);
@@ -77,9 +72,7 @@ namespace Talents
                     list.Add(ETalents.CAP_SCREEN_SAFETY);
                     switch (RaceID)
                     {
-                        case 0:     // Human Male
-                            break;
-                        case 3:     // Human Female
+                        case 0:     // Human 
                             break;
                         case 1:     // Sylvassi
                             break;
@@ -95,9 +88,7 @@ namespace Talents
                     list.Add(ETalents.PIL_KEEN_EYES);
                     switch (RaceID)
                     {
-                        case 0:     // Human Male
-                            break;
-                        case 3:     // Human Female
+                        case 0:     // Human 
                             break;
                         case 1:     // Sylvassi
                             break;
@@ -115,9 +106,7 @@ namespace Talents
                     list.Add(ETalents.SCI_PROBE_XP);
                     switch (RaceID)
                     {
-                        case 0:     // Human Male
-                            break;
-                        case 3:     // Human Female
+                        case 0:     // Human
                             break;
                         case 1:     // Sylvassi
                             break;
@@ -137,9 +126,7 @@ namespace Talents
                     list.Add(ETalents.E_TURRET_COOLING_CREW_WEAPONS);
                     switch (RaceID)
                     {
-                        case 0:     // Human Male
-                            break;
-                        case 3:     // Human Female
+                        case 0:     // Human
                             break;
                         case 1:     // Sylvassi
                             break;
@@ -159,9 +146,7 @@ namespace Talents
                     list.Add(ETalents.E_TURRET_COOLING_CREW_ENGINEER);
                     switch (RaceID)
                     {
-                        case 0:     // Human Male
-                            break;
-                        case 3:     // Human Female
+                        case 0:     // Human
                             break;
                         case 1:     // Sylvassi
                             break;

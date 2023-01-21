@@ -50,8 +50,6 @@ namespace Talents
             list.Add(ETalents.COMPONENT_UPGRADER_OPERATOR);
             switch (RaceID)
             {
-                default:
-                    break;
                 case 0:     // Human Male
                     list.Add(ETalents.OXYGEN_TRAINING);
                     list.Add((ETalents)ETalentsPlus.HUMAN_M);
@@ -79,8 +77,6 @@ namespace Talents
                     list.Add(ETalents.CAP_SCREEN_SAFETY);
                     switch (RaceID)
                     {
-                        default:
-                            break;
                         case 0:     // Human Male
                             break;
                         case 3:     // Human Female
@@ -99,8 +95,6 @@ namespace Talents
                     list.Add(ETalents.PIL_KEEN_EYES);
                     switch (RaceID)
                     {
-                        default:
-                            break;
                         case 0:     // Human Male
                             break;
                         case 3:     // Human Female
@@ -121,8 +115,6 @@ namespace Talents
                     list.Add(ETalents.SCI_PROBE_XP);
                     switch (RaceID)
                     {
-                        default:
-                            break;
                         case 0:     // Human Male
                             break;
                         case 3:     // Human Female
@@ -145,8 +137,6 @@ namespace Talents
                     list.Add(ETalents.E_TURRET_COOLING_CREW_WEAPONS);
                     switch (RaceID)
                     {
-                        default:
-                            break;
                         case 0:     // Human Male
                             break;
                         case 3:     // Human Female
@@ -169,8 +159,6 @@ namespace Talents
                     list.Add(ETalents.E_TURRET_COOLING_CREW_ENGINEER);
                     switch (RaceID)
                     {
-                        default:
-                            break;
                         case 0:     // Human Male
                             break;
                         case 3:     // Human Female

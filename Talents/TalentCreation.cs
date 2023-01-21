@@ -23,35 +23,59 @@ namespace Talents
             }
             List<ETalents> list = new List<ETalents>();
             list.Add(ETalents.HEALTH_BOOST);
-            list.Add(ETalents.ARMOR_BOOST);
             list.Add(ETalents.HEALTH_BOOST_2);
-            list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_3);
-            list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_4);
-            list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_5);
-            list.Add(ETalents.ARMOR_BOOST_2);
-            list.Add(ETalents.PISTOL_DMG_BOOST);
-            list.Add(ETalents.QUICK_RESPAWN);
-            list.Add(ETalents.ADVANCED_OPERATOR);
-            list.Add(ETalents.SENSOR_DISH_CERT);
+            list.Add(ETalents.ANTI_RAD_INJECTION);
+            list.Add(ETalents.INC_ENEMY_ATRIUM_HEAL);
+
+            //list.Add(ETalents.PISTOL_DMG_BOOST);
+            list.Add((ETalents)ETalentsPlus.PHASE_DAMAGE);
+            list.Add((ETalents)ETalentsPlus.BEAM_DAMAGE);
+            list.Add((ETalents)ETalentsPlus.HEAVY_DAMAGE);
+            list.Add((ETalents)ETalentsPlus.RIFLE_DAMAGE);
+            list.Add((ETalents)ETalentsPlus.GRENADE_AMMO);
+
             list.Add(ETalents.WPNS_RELOAD_SPEED);
             list.Add(ETalents.WPNS_RELOAD_SPEED_2);
+            list.Add((ETalents)ETalentsPlus.PERSONAL_GUN_COOLING);
+            list.Add((ETalents)ETalentsPlus.RAPID);
+            list.Add((ETalents)ETalentsPlus.ACCURATE);
+
+            list.Add(ETalents.QUICK_RESPAWN);
             list.Add(ETalents.INC_STAMINA);
-            list.Add(ETalents.INC_MAX_WEIGHT);
+            list.Add((ETalents)ETalentsPlus.SPEED_BOOST);
             list.Add(ETalents.INC_JETPACK);
-            list.Add(ETalents.INC_TURRET_ZOOM);
-            list.Add(ETalents.INC_HEALING_RATE);
-            list.Add(ETalents.INC_ENEMY_ATRIUM_HEAL);
             list.Add(ETalents.INC_ALLOW_ENCUMBERED_SPRINT);
-            list.Add(ETalents.ANTI_RAD_INJECTION);
-            list.Add(ETalents.SCI_SCANNER_PICKUPS);
-            list.Add(ETalents.SCI_SCANNER_RESEARCH_MAT);
+            list.Add(ETalents.INC_MAX_WEIGHT);
+
+            list.Add(ETalents.ADVANCED_OPERATOR);
             list.Add(ETalents.ITEM_UPGRADER_OPERATOR);
             list.Add(ETalents.COMPONENT_UPGRADER_OPERATOR);
+
+            list.Add((ETalents)ETalentsPlus.SOCIAL);
+            list.Add((ETalents)ETalentsPlus.SOCIAL_2);
+
+
+            list.Add(ETalents.SCI_SCANNER_PICKUPS);
+            list.Add(ETalents.SCI_SCANNER_RESEARCH_MAT);
+            list.Add(ETalents.SENSOR_DISH_CERT);
+
+            list.Add(ETalents.INC_TURRET_ZOOM);
             switch (RaceID)
             {
                 case 0:     // Human 
+                    list.Add((ETalents)ETalentsPlus.HUMAN);
+                    list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_3);
+                    list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_4);
+                    //list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_5);
+                    list.Add(ETalents.ARMOR_BOOST);
+                    list.Add(ETalents.ARMOR_BOOST_2);
                     list.Add(ETalents.OXYGEN_TRAINING);
-                    list.Add((ETalents)ETalentsPlus.HUMAN_M);
+                    list.Add(ETalents.INC_HEALING_RATE); // Atrium Healing Enhancement
+                    // Alchemist
+                    // EXO Armour Plated
+                    // EXO Armour Plated II
+                    // EXO Lightweight
+                    // EXO Lightweight II
                     break;
                 case 1:     // Sylvassi
                     list.Add((ETalents)ETalentsPlus.SYLVASSI);

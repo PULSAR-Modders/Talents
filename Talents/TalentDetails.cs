@@ -30,11 +30,31 @@ namespace Talents
             talentInfo.MinLevel = 0;
             switch ((int)inTalent)
             {
+                case (int)ETalents.ARMOR_BOOST:
+                    talentInfo.Name = "Armor Boost";
+                    talentInfo.Desc = "+1 Armor per rank";
+                    talentInfo.MaxRank = 5;
+                    //talentInfo.GetAdditionalData().ConflictTalents = new ETalents[1] {ETalents.HEALTH_BOOST};
+                    break;
+                case (int)ETalents.ARMOR_BOOST_2:
+                    talentInfo.Name = "Armor Boost II";
+                    talentInfo.Desc = "+1 Armor per rank";
+                    talentInfo.MaxRank = 5;
+                    talentInfo.ExtendsTalent = ETalents.ARMOR_BOOST;
+                    talentInfo.MinLevel = 6;
+                    break;
                 case (int)ETalents.HEALTH_BOOST:
                     talentInfo.Name = "Health Boost";
                     talentInfo.Desc = "+20 to max health per rank";
                     talentInfo.MaxRank = 5;
                     //talentInfo.GetAdditionalData().ConflictTalents = new ETalents[1] {ETalents.ARMOR_BOOST};
+                    break;
+                case (int)ETalents.HEALTH_BOOST_2:
+                    talentInfo.Name = "Health Boost II";
+                    talentInfo.Desc = "+20 to max health per rank";
+                    talentInfo.MaxRank = 5;
+                    talentInfo.ExtendsTalent = ETalents.HEALTH_BOOST;
+                    talentInfo.MinLevel = 6;
                     break;
                 case (int)ETalents.OXYGEN_TRAINING:
                     talentInfo.Name = "Oxygen Survival";
@@ -165,6 +185,7 @@ namespace Talents
                     talentInfo.ResearchCost[1] = 2;
                     talentInfo.ResearchCost[2] = 1;
                     talentInfo.WarpsToResearch = 3;
+                    talentInfo.GetAdditionalData().ConflictTalents = new ETalents[1] { (ETalents)ETalentsPlus.SPEED_BOOST };
                     break;
                 case (int)ETalents.WPNS_COOLING:
                     talentInfo.Name = "Gun Cooling";
@@ -420,26 +441,6 @@ namespace Talents
                     talentInfo.Desc = "Allows use of the Component Upgrader";
                     talentInfo.MaxRank = 1;
                     break;
-                case (int)ETalents.ARMOR_BOOST:
-                    talentInfo.Name = "Armor Boost";
-                    talentInfo.Desc = "+1 Armor per rank";
-                    talentInfo.MaxRank = 5;
-                    //talentInfo.GetAdditionalData().ConflictTalents = new ETalents[1] {ETalents.HEALTH_BOOST};
-                    break;
-                case (int)ETalents.HEALTH_BOOST_2:
-                    talentInfo.Name = "Health Boost II";
-                    talentInfo.Desc = "+20 to max health per rank";
-                    talentInfo.MaxRank = 5;
-                    talentInfo.ExtendsTalent = ETalents.HEALTH_BOOST;
-                    talentInfo.MinLevel = 6;
-                    break;
-                case (int)ETalents.ARMOR_BOOST_2:
-                    talentInfo.Name = "Armor Boost II";
-                    talentInfo.Desc = "+1 Armor per rank";
-                    talentInfo.MaxRank = 5;
-                    talentInfo.ExtendsTalent = ETalents.ARMOR_BOOST;
-                    talentInfo.MinLevel = 6;
-                    break;
                 case (int)ETalents.WPNS_RELOAD_SPEED:
                     talentInfo.Name = "Quick Reload I";
                     talentInfo.Desc = "+8% to reload speed per rank";
@@ -490,13 +491,8 @@ namespace Talents
                     talentInfo.ExtendsTalent = (ETalents)ETalentsPlus.HEALTH_BOOST_4;
                     talentInfo.MinLevel = 21;
                     break;
-                case ETalentsPlus.HUMAN_M:
-                    talentInfo.Name = "(DEBUG) HUMAN MALE";
-                    talentInfo.Desc = "DEBUG";
-                    talentInfo.MaxRank = 1;
-                    break;
-                case ETalentsPlus.HUMAN_F:
-                    talentInfo.Name = "(DEBUG) HUMAN FEMALE";
+                case ETalentsPlus.HUMAN:
+                    talentInfo.Name = "(DEBUG) HUMAN";
                     talentInfo.Desc = "DEBUG";
                     talentInfo.MaxRank = 1;
                     break;
@@ -510,6 +506,65 @@ namespace Talents
                     talentInfo.Desc = "DEBUG";
                     talentInfo.MaxRank = 1;
                     break;
+                case ETalentsPlus.PHASE_DAMAGE:
+                    talentInfo.Name = "Phase Damage";
+                    talentInfo.Desc = "Boosts Phase & Smuggler damage by 10% per rank";
+                    talentInfo.MaxRank = 5;
+                    break;
+                case ETalentsPlus.BEAM_DAMAGE:
+                    talentInfo.Name = "Beam Damage";
+                    talentInfo.Desc = "Boosts Beam Pistol & Beam Rifle damage by 10% per rank";
+                    talentInfo.MaxRank = 5;
+                    break;
+                case ETalentsPlus.HEAVY_DAMAGE:
+                    talentInfo.Name = "Heavy Weapon Damage";
+                    talentInfo.Desc = "Boosts Heavy Pistol & Heavy Beam Pistol damage by 10% per rank";
+                    talentInfo.MaxRank = 5;
+                    break;
+                case ETalentsPlus.RIFLE_DAMAGE:
+                    talentInfo.Name = "Rifle Damage";
+                    talentInfo.Desc = "Boosts W.D Heavy, I.M.P.A.C.T, Splitshot & Burst Rifle damage by 10% per rank";
+                    talentInfo.MaxRank = 5;
+                    break;
+                case ETalentsPlus.GRENADE_AMMO:
+                    talentInfo.Name = "Grenade Ammo";
+                    talentInfo.Desc = "Increases Grenade Amount";
+                    talentInfo.MaxRank = 5;
+                    break;
+                case ETalentsPlus.PERSONAL_GUN_COOLING:
+                    talentInfo.Name = "Gun Cooling";
+                    talentInfo.Desc = "Personal guns will cool down 5% faster per rank";
+                    talentInfo.MaxRank = 3;
+                    break;
+                case ETalentsPlus.RAPID:
+                    talentInfo.Name = "Fire Rate";
+                    talentInfo.Desc = "Personal guns will fire 5% faster per rank";
+                    talentInfo.MaxRank = 3;
+                    talentInfo.GetAdditionalData().ConflictTalents = new ETalents[1] { (ETalents)ETalentsPlus.ACCURATE };
+                    break;
+                case ETalentsPlus.ACCURATE:
+                    talentInfo.Name = "Accuracy";
+                    talentInfo.Desc = "Personal guns will be 5% more accurate per rank";
+                    talentInfo.MaxRank = 3;
+                    talentInfo.GetAdditionalData().ConflictTalents = new ETalents[1] { (ETalents)ETalentsPlus.RAPID };
+                    break;
+                case ETalentsPlus.SPEED_BOOST:
+                    talentInfo.Name = "Speed Boost";
+                    talentInfo.Desc = "Increases speed per rank";
+                    talentInfo.MaxRank = 5;
+                    talentInfo.GetAdditionalData().ConflictTalents = new ETalents[1] { ETalents.INC_STAMINA };
+                    break;
+                case ETalentsPlus.SOCIAL:
+                    talentInfo.Name = "Social";
+                    talentInfo.Desc = "Increased chance of selling biscuits to the same species 5% per rank";
+                    talentInfo.MaxRank = 4;
+                    break;
+                case ETalentsPlus.SOCIAL_2:
+                    talentInfo.Name = "Social II";
+                    talentInfo.Desc = "Increased chance of selling biscuits to the same species 5% per rank";
+                    talentInfo.MaxRank = 2;
+                    talentInfo.ExtendsTalent = (ETalents)ETalentsPlus.SOCIAL;
+                    break;
             }
             CachedTalentInfos.Add((int)inTalent, talentInfo);
             __result = talentInfo;
@@ -521,10 +576,24 @@ namespace Talents
         public const int HEALTH_BOOST_3 = (int)ETalents.MAX + 1;    // 64
         public const int HEALTH_BOOST_4 = (int)ETalents.MAX + 2;
         public const int HEALTH_BOOST_5 = (int)ETalents.MAX + 3;
-        public const int HUMAN_M = (int)ETalents.MAX + 4;
-        public const int HUMAN_F = (int)ETalents.MAX + 5;
-        public const int SYLVASSI = (int)ETalents.MAX + 6;
-        public const int ROBOT = (int)ETalents.MAX + 7;
-        public const int MAX = (int)ETalents.MAX + 8;
+
+        public const int HUMAN = (int)ETalents.MAX + 4;
+        public const int SYLVASSI = (int)ETalents.MAX + 5;
+        public const int ROBOT = (int)ETalents.MAX + 6;
+
+        public const int PHASE_DAMAGE = (int)ETalents.MAX + 7;
+        public const int BEAM_DAMAGE = (int)ETalents.MAX + 8;
+        public const int HEAVY_DAMAGE = (int)ETalents.MAX + 9;
+        public const int RIFLE_DAMAGE = (int)ETalents.MAX + 10;
+        public const int GRENADE_AMMO = (int)ETalents.MAX + 11;
+        public const int PERSONAL_GUN_COOLING = (int)ETalents.MAX + 12;
+        public const int RAPID = (int)ETalents.MAX + 13;
+        public const int ACCURATE = (int)ETalents.MAX + 14;
+
+        public const int SPEED_BOOST = (int)ETalents.MAX + 15;
+        public const int SOCIAL = (int)ETalents.MAX + 16;
+        public const int SOCIAL_2 = (int)ETalents.MAX + 17;
+
+        public const int MAX = (int)ETalents.MAX + 18;
     }
 }

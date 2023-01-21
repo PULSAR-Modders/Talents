@@ -26,10 +26,10 @@ namespace Talents
     [Serializable]
     public class TalentInfoAdditionalData
     {
-        public ETalents ConflictTalent; // This is called with: TalentInfo __instance.GetAdditionalData().PlayerID
+        public ETalents[] ConflictTalents; // This is called with: TalentInfo __instance.GetAdditionalData().ConflictTalents
         public TalentInfoAdditionalData()
         {
-            ConflictTalent = ETalents.MAX;
+            ConflictTalents = null;
         }
     }
     [HarmonyPatch(typeof(PLServer), "Start")]

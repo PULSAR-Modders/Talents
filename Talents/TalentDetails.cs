@@ -27,7 +27,6 @@ namespace Talents
             talentInfo.MaxRank = 3;
             talentInfo.ResearchCost = new int[6];
             talentInfo.WarpsToResearch = 3;
-            talentInfo.ExtendsTalent = ETalents.MAX;
             talentInfo.MinLevel = 0;
             switch ((int)inTalent)
             {
@@ -35,7 +34,7 @@ namespace Talents
                     talentInfo.Name = "Health Boost";
                     talentInfo.Desc = "+20 to max health per rank";
                     talentInfo.MaxRank = 5;
-                    //talentInfo.GetAdditionalData().ConflictTalent = ETalents.ARMOR_BOOST;
+                    talentInfo.GetAdditionalData().ConflictTalents = new ETalents[1] {ETalents.ARMOR_BOOST};
                     break;
                 case (int)ETalents.OXYGEN_TRAINING:
                     talentInfo.Name = "Oxygen Survival";
@@ -425,7 +424,7 @@ namespace Talents
                     talentInfo.Name = "Armor Boost";
                     talentInfo.Desc = "+1 Armor per rank";
                     talentInfo.MaxRank = 5;
-                    //talentInfo.GetAdditionalData().ConflictTalent = ETalents.HEALTH_BOOST;
+                    talentInfo.GetAdditionalData().ConflictTalents = new ETalents[1] {ETalents.HEALTH_BOOST};
                     break;
                 case (int)ETalents.HEALTH_BOOST_2:
                     talentInfo.Name = "Health Boost II";

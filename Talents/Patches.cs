@@ -225,8 +225,16 @@ namespace Talents
         public static bool Replacement(PLTabMenu instance, ETalents etalents)
         {
             PLPlayer player = PLServer.Instance.GetPlayerFromPlayerID(instance.TalentsListSelectedPlayerID);
-            ETalents ConflictingTalent = PLGlobal.GetTalentInfoForTalentType(etalents).GetAdditionalData().ConflictTalent;
-            return PLServer.Instance.IsTalentUnlocked(etalents) && (ConflictingTalent == ETalents.MAX || player.Talents[(int)ConflictingTalent] == 0);
+            return PLServer.Instance.IsTalentUnlocked(etalents) && !HasConflictingTalents(player, etalents);
+        }
+        private static bool HasConflictingTalents(PLPlayer player, ETalents etalents)
+        {
+            if (PLGlobal.GetTalentInfoForTalentType(etalents).GetAdditionalData().ConflictTalents == null) return false;
+            foreach (ETalents Talent in PLGlobal.GetTalentInfoForTalentType(etalents).GetAdditionalData().ConflictTalents)
+            {
+                if (player.Talents[(int)Talent] != 0) return true;
+            }
+            return false;
         }
     }
 }

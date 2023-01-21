@@ -63,7 +63,7 @@ namespace Talents
         private static IEnumerator SendTalentsToPhotonTargets(PLPlayer __instance, int inClassID, PhotonTargets inTargets, bool sendAll = false, PhotonPlayer inPlayer = null)
         {
             int talentID = 0;
-            PulsarModLoader.Utilities.Logger.Info($"[TALENTS] - SendTalentsToPhotonTargets: inPlayer = null {inPlayer == null} | {inClassID}");
+            //PulsarModLoader.Utilities.Logger.Info($"[TALENTS] - SendTalentsToPhotonTargets: inPlayer = null {inPlayer == null} | {inClassID}");
             List<ETalents> TalentList = TalentCreation.TalentsForClassSpecies(PLServer.GetPlayerForPhotonPlayer(inPlayer), inClassID);
             while (talentID < ETalentsPlus.MAX && talentID < __instance.Talents.Length)
             {

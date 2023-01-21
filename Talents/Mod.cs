@@ -20,6 +20,7 @@ namespace Talents
         public override string Author => "Mest";
         public override string Name => "TalentsPlus";
         public override string Version => "0.0.0";
+        public static bool ModEnabled = false;
     }
 
     [Serializable]
@@ -31,7 +32,25 @@ namespace Talents
             ConflictTalent = ETalents.MAX;
         }
     }
-
+    [HarmonyPatch(typeof(PLServer), "Start")]
+    class StartPatch
+    {
+        private static void Postfix()
+        {
+            Mod.ModEnabled = PhotonNetwork.isMasterClient || PulsarModLoader.MPModChecks.MPModCheckManager.Instance.NetworkedPeerHasMod(PhotonNetwork.masterClient, "Mest.Talents");
+        }
+    }
+    [HarmonyPatch(typeof(PLUIClassSelectionMenu), "ClickReady")]
+    class BackupStartPatch
+    {
+        public static void Postfix()
+        {
+            if (!Mod.ModEnabled)
+            {
+                Mod.ModEnabled = PhotonNetwork.isMasterClient || PulsarModLoader.MPModChecks.MPModCheckManager.Instance.NetworkedPeerHasMod(PhotonNetwork.masterClient, "Mest.Talents");
+            }
+        }
+    }
     /// <summary>
     /// The below class adds the custom class to the existing class TalentInfo
     /// </summary>

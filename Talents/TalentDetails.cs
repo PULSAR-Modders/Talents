@@ -14,6 +14,7 @@ namespace Talents
         protected static FieldInfo CachedTalentInfosInfo = AccessTools.Field(typeof(PLGlobal), "CachedTalentInfos");
         public static bool Prefix(PLGlobal __instance, ETalents inTalent, ref TalentInfo __result)
         {
+            if (!Mod.ModEnabled) return true;
             Dictionary<int, TalentInfo> CachedTalentInfos = (Dictionary<int, TalentInfo>)CachedTalentInfosInfo.GetValue(__instance);
             if (CachedTalentInfos.ContainsKey((int)inTalent))
             {

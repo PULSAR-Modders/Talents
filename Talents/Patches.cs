@@ -64,7 +64,7 @@ namespace Talents
         {
             int talentID = 0;
             PulsarModLoader.Utilities.Logger.Info($"[TALENTS] - SendTalentsToPhotonTargets: inPlayer = null {inPlayer == null} | {inClassID}");
-            List<ETalents> TalentList = TalentCreation.TalentsForClassSpecies(PLServer.GetPlayerForPhotonPlayer(inPlayer));
+            List<ETalents> TalentList = TalentCreation.TalentsForClassSpecies(PLServer.GetPlayerForPhotonPlayer(inPlayer), inClassID);
             while (talentID < ETalentsPlus.MAX && talentID < __instance.Talents.Length)
             {
                 if (talentID == (int)ETalents.MAX)
@@ -197,7 +197,7 @@ namespace Talents
         }
         public static List<ETalents> Replacement(PLTabMenu instance, PLPlayer pLPlayer)
         {
-            List<ETalents> Talents = TalentCreation.TalentsForClassSpecies(pLPlayer);
+            List<ETalents> Talents = TalentCreation.TalentsForClassSpecies(pLPlayer, pLPlayer.GetClassID());
             return Talents;
         }
     }

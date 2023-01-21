@@ -9,12 +9,15 @@ namespace Talents
     internal class TalentCreation
     {
         public static Dictionary<int, Dictionary<int, List<ETalents>>> cachedTalentsForClassSpecies = new Dictionary<int, Dictionary<int, List<ETalents>>>(5);
-        public static List<ETalents> TalentsForClassSpecies(PLPlayer pLPlayer)
+        public static List<ETalents> TalentsForClassSpecies(PLPlayer pLPlayer, int ClassID = -1)
         {
-            int ClassID = pLPlayer.GetClassID();
             if (!Mod.ModEnabled) return PLGlobal.TalentsForClass(ClassID);
-            int RaceID = pLPlayer.RaceID; // 0 = Human, 1 = Sylvassi, 2 = Robot
-            if (RaceID == 0 && !pLPlayer.Gender_IsMale) RaceID = 3; // Makes Female as RaceID 3 (Local)
+            int RaceID = 0;
+            if (ClassID != -1 && pLPlayer != null)
+            {
+                RaceID = pLPlayer.RaceID; // 0 = Human, 1 = Sylvassi, 2 = Robot
+                if (RaceID == 0 && !pLPlayer.Gender_IsMale) RaceID = 3; // Makes Female as RaceID 3 (Local)
+            }
             if (cachedTalentsForClassSpecies.ContainsKey(ClassID) && cachedTalentsForClassSpecies[ClassID].ContainsKey(RaceID))
             {
                 return cachedTalentsForClassSpecies[ClassID][RaceID];
@@ -47,6 +50,8 @@ namespace Talents
             list.Add(ETalents.COMPONENT_UPGRADER_OPERATOR);
             switch (RaceID)
             {
+                default:
+                    break;
                 case 0:     // Human Male
                     list.Add(ETalents.OXYGEN_TRAINING);
                     list.Add((ETalents)ETalentsPlus.HUMAN_M);
@@ -74,6 +79,8 @@ namespace Talents
                     list.Add(ETalents.CAP_SCREEN_SAFETY);
                     switch (RaceID)
                     {
+                        default:
+                            break;
                         case 0:     // Human Male
                             break;
                         case 3:     // Human Female
@@ -92,6 +99,8 @@ namespace Talents
                     list.Add(ETalents.PIL_KEEN_EYES);
                     switch (RaceID)
                     {
+                        default:
+                            break;
                         case 0:     // Human Male
                             break;
                         case 3:     // Human Female
@@ -112,6 +121,8 @@ namespace Talents
                     list.Add(ETalents.SCI_PROBE_XP);
                     switch (RaceID)
                     {
+                        default:
+                            break;
                         case 0:     // Human Male
                             break;
                         case 3:     // Human Female
@@ -134,6 +145,8 @@ namespace Talents
                     list.Add(ETalents.E_TURRET_COOLING_CREW_WEAPONS);
                     switch (RaceID)
                     {
+                        default:
+                            break;
                         case 0:     // Human Male
                             break;
                         case 3:     // Human Female
@@ -156,6 +169,8 @@ namespace Talents
                     list.Add(ETalents.E_TURRET_COOLING_CREW_ENGINEER);
                     switch (RaceID)
                     {
+                        default:
+                            break;
                         case 0:     // Human Male
                             break;
                         case 3:     // Human Female

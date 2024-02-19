@@ -15,15 +15,9 @@ using static PulsarModLoader.Patches.HarmonyHelpers;
 
 namespace Talents
 {
-    [HarmonyPatch(typeof(PLPlayer), "Start")]
-    class StartTalentSizePatch
-    {
-        public static void Postfix(PLPlayer __instance)
-        {
-            __instance.Talents = new ObscuredInt[ETalentsPlus.MAX + 1];
-            __instance.TalentsLocalEditTime = new float[ETalentsPlus.MAX + 1];
-        }
-    }
+    /*
+     * Serialize Talents (Might have already patched in TalentModManager)
+     * 
     [HarmonyPatch(typeof(PLPlayer), "SendLateInfoTo")]
     class SendLateInfoTo
     {
@@ -174,34 +168,10 @@ namespace Talents
             yield break;
         }
     }
-
-    [HarmonyPatch(typeof(PLTabMenu), "UpdateTDs")]
-    class UpdateTDs
-    {
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            List<CodeInstruction> target = new List<CodeInstruction>()
-            {
-                new CodeInstruction(OpCodes.Ldloc_S),       // playerFromPlayerID
-                new CodeInstruction(OpCodes.Callvirt),
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PLGlobal), "TalentsForClass", new Type[] { typeof(Int32) })),
-            };
-            int NextInstruction = FindSequence(instructions, target, CheckMode.NONNULL);
-            List<CodeInstruction> patch = new List<CodeInstruction>()
-            {
-                new CodeInstruction(OpCodes.Ldarg_0),       // PLTabMenu Instance
-                instructions.ToList()[NextInstruction - 3], // playerFromPlayerID
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(UpdateTDs), "Replacement", new Type[] { typeof(PLTabMenu), typeof(PLPlayer) }))
-            };
-            return PatchBySequence(instructions, target, patch, PatchMode.REPLACE, CheckMode.NONNULL);
-        }
-        public static List<ETalents> Replacement(PLTabMenu instance, PLPlayer pLPlayer)
-        {
-            List<ETalents> Talents = TalentCreation.TalentsForClassSpecies(pLPlayer, pLPlayer.GetClassID());
-            return Talents;
-        }
-    }
-    
+    */
+    /*
+     * Conflicting Talents Patch
+     * 
     [HarmonyPatch(typeof(PLTabMenu), "UpdateTDs")]
     class LockConflictingTalents
     {
@@ -237,4 +207,5 @@ namespace Talents
             return false;
         }
     }
+    */
 }

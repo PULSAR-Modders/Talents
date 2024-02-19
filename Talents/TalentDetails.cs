@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 
 namespace Talents
 {
-    [HarmonyPatch(typeof(PLGlobal), "GetTalentInfoForTalentType")]
+    /*
+     * Already overriden with TalentModManager
+     * 
+     * [HarmonyPatch(typeof(PLGlobal), "GetTalentInfoForTalentType")]
     class GetTalentInfoForTalentType
     {
         protected static FieldInfo CachedTalentInfosInfo = AccessTools.Field(typeof(PLGlobal), "CachedTalentInfos");
@@ -596,4 +599,5 @@ namespace Talents
 
         public const int MAX = (int)ETalents.MAX + 18;
     }
+    */
 }

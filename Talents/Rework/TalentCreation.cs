@@ -6,12 +6,19 @@ using System.Threading.Tasks;
 
 namespace Talents
 {
+    /* This is my old static method of assigning class talent trees.
+     * It'd be preferable to rework to include
+     *      - Mod class tree assignments
+     *      - Mod talent tree removals
+     * etc . . .
+    */
     internal class TalentCreation
     {
         public static Dictionary<int, Dictionary<int, List<ETalents>>> cachedTalentsForClassSpecies = new Dictionary<int, Dictionary<int, List<ETalents>>>(5);
         public static List<ETalents> TalentsForClassSpecies(PLPlayer pLPlayer, int ClassID = -1)
         {
-            if (!Mod.ModEnabled) return PLGlobal.TalentsForClass(ClassID);
+            return Enum.GetValues(typeof(ETalents)).OfType<ETalents>().ToList(); // Temp to return all talents
+            //if (!Mod.ModEnabled) return PLGlobal.TalentsForClass(ClassID);
             int RaceID = 0;
             if (ClassID != -1 && pLPlayer != null)
             {
@@ -28,21 +35,21 @@ namespace Talents
             list.Add(ETalents.INC_ENEMY_ATRIUM_HEAL);
 
             //list.Add(ETalents.PISTOL_DMG_BOOST);
-            list.Add((ETalents)ETalentsPlus.PHASE_DAMAGE);
-            list.Add((ETalents)ETalentsPlus.BEAM_DAMAGE);
-            list.Add((ETalents)ETalentsPlus.HEAVY_DAMAGE);
-            list.Add((ETalents)ETalentsPlus.RIFLE_DAMAGE);
-            list.Add((ETalents)ETalentsPlus.GRENADE_AMMO);
+            //list.Add((ETalents)ETalentsPlus.PHASE_DAMAGE);
+            //list.Add((ETalents)ETalentsPlus.BEAM_DAMAGE);
+            //list.Add((ETalents)ETalentsPlus.HEAVY_DAMAGE);
+            //list.Add((ETalents)ETalentsPlus.RIFLE_DAMAGE);
+            //list.Add((ETalents)ETalentsPlus.GRENADE_AMMO);
 
             list.Add(ETalents.WPNS_RELOAD_SPEED);
             list.Add(ETalents.WPNS_RELOAD_SPEED_2);
-            list.Add((ETalents)ETalentsPlus.PERSONAL_GUN_COOLING);
-            list.Add((ETalents)ETalentsPlus.RAPID);
-            list.Add((ETalents)ETalentsPlus.ACCURATE);
+            //list.Add((ETalents)ETalentsPlus.PERSONAL_GUN_COOLING);
+            //list.Add((ETalents)ETalentsPlus.RAPID);
+            //list.Add((ETalents)ETalentsPlus.ACCURATE);
 
             list.Add(ETalents.QUICK_RESPAWN);
             list.Add(ETalents.INC_STAMINA);
-            list.Add((ETalents)ETalentsPlus.SPEED_BOOST);
+            //list.Add((ETalents)ETalentsPlus.SPEED_BOOST);
             list.Add(ETalents.INC_JETPACK);
             list.Add(ETalents.INC_ALLOW_ENCUMBERED_SPRINT);
             list.Add(ETalents.INC_MAX_WEIGHT);
@@ -51,8 +58,8 @@ namespace Talents
             list.Add(ETalents.ITEM_UPGRADER_OPERATOR);
             list.Add(ETalents.COMPONENT_UPGRADER_OPERATOR);
 
-            list.Add((ETalents)ETalentsPlus.SOCIAL);
-            list.Add((ETalents)ETalentsPlus.SOCIAL_2);
+            //list.Add((ETalents)ETalentsPlus.SOCIAL);
+            //list.Add((ETalents)ETalentsPlus.SOCIAL_2);
 
 
             list.Add(ETalents.SCI_SCANNER_PICKUPS);
@@ -63,9 +70,9 @@ namespace Talents
             switch (RaceID)
             {
                 case 0:     // Human 
-                    list.Add((ETalents)ETalentsPlus.HUMAN);
-                    list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_3);
-                    list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_4);
+                    //list.Add((ETalents)ETalentsPlus.HUMAN);
+                    //list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_3);
+                    //list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_4);
                     //list.Add((ETalents)ETalentsPlus.HEALTH_BOOST_5);
                     list.Add(ETalents.ARMOR_BOOST);
                     list.Add(ETalents.ARMOR_BOOST_2);
@@ -78,10 +85,10 @@ namespace Talents
                     // EXO Lightweight II
                     break;
                 case 1:     // Sylvassi
-                    list.Add((ETalents)ETalentsPlus.SYLVASSI);
+                    //list.Add((ETalents)ETalentsPlus.SYLVASSI);
                     break;
                 case 2:     // Robot
-                    list.Add((ETalents)ETalentsPlus.ROBOT);
+                    //list.Add((ETalents)ETalentsPlus.ROBOT);
                     break;
             }
             switch (ClassID)

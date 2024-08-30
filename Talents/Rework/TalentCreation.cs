@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PulsarModLoader.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,8 +18,9 @@ namespace Talents
         public static Dictionary<int, Dictionary<int, List<ETalents>>> cachedTalentsForClassSpecies = new Dictionary<int, Dictionary<int, List<ETalents>>>(5);
         public static List<ETalents> TalentsForClassSpecies(PLPlayer pLPlayer, int ClassID = -1)
         {
-            return Enum.GetValues(typeof(ETalents)).OfType<ETalents>().ToList(); // Temp to return all talents
+            //return Enum.GetValues(typeof(ETalents)).OfType<ETalents>().ToList(); // Temp to return all talents
             //if (!Mod.ModEnabled) return PLGlobal.TalentsForClass(ClassID);
+            Logger.Info("Creating Talents Tree");
             int RaceID = 0;
             if (ClassID != -1 && pLPlayer != null)
             {
@@ -201,6 +203,7 @@ namespace Talents
             {
                 cachedTalentsForClassSpecies.Add(ClassID, new Dictionary<int, List<ETalents>> { { RaceID, list } });
             }
+            Logger.Info("Finished Talents Tree");
             return list;
         }
     }

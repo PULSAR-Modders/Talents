@@ -96,7 +96,7 @@ namespace Talents.Framework
     {
         static void Postfix(PLPlayer __instance)
         {
-            int TalentMaxSize = Enum.GetValues(typeof(ETalents)).Length;
+            int TalentMaxSize = Enum.GetValues(typeof(ETalents)).Length + TalentModManager.Instance.TalentTypes.Count;
             __instance.Talents = new ObscuredInt[TalentMaxSize];
             __instance.TalentsLocalEditTime = new float[TalentMaxSize];
         }
@@ -119,7 +119,7 @@ namespace Talents.Framework
             },
             PatchMode.REPLACE);
         }
-        static int Patch() => Enum.GetValues(typeof(ETalents)).Length;
+        static int Patch() => Enum.GetValues(typeof(ETalents)).Length + TalentModManager.Instance.TalentTypes.Count;
     }
 
     // Allows new Talents to be synced with joining players
@@ -139,6 +139,6 @@ namespace Talents.Framework
             },
             PatchMode.REPLACE);
         }
-        static int Patch() => Enum.GetValues(typeof(ETalents)).Length;
+        static int Patch() => Enum.GetValues(typeof(ETalents)).Length + TalentModManager.Instance.TalentTypes.Count;
     }
 }

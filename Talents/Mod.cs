@@ -16,9 +16,7 @@ namespace Talents
     {
         static void Postfix()
         {
-            PulsarModLoader.Utilities.Logger.Info("TALENTS WAS HERE");
             _ = TalentModManager.Instance;
-            PulsarModLoader.Utilities.Logger.Info("TALENTS WAS STARTED HERE HERE");
         }
     }
             /*

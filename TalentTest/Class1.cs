@@ -17,6 +17,8 @@ namespace TalentTest
         public override int MaxRank => 5;
         public override ETalents ExtendsDefaultTalent => ETalents.HEALTH_BOOST_2;
         public override int MinLevel => 11;
+        public override int ClassID => 0;
+        public override (TalentModManager.CharacterClass, TalentModManager.CharacterSpecies) TalentAssignment => (TalentModManager.CharacterClass.General, TalentModManager.CharacterSpecies.Human);
     }
     internal class Health_Boost_4 : TalentMod
     {
@@ -25,6 +27,8 @@ namespace TalentTest
         public override int MaxRank => 5;
         public override string ExtendsModdedTalent => "Health Boost III";
         public override int MinLevel => 16;
+        public override int ClassID => 0;
+        public override (TalentModManager.CharacterClass, TalentModManager.CharacterSpecies) TalentAssignment => (TalentModManager.CharacterClass.General, TalentModManager.CharacterSpecies.Human);
     }
 
     [HarmonyPatch(typeof(PLPawn), "Update")]

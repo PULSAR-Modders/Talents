@@ -13,6 +13,23 @@ namespace Talents.Framework
 {
     public class TalentModManager
     {
+        public enum CharacterClass
+        {
+            General = -1,
+            Captain,
+            Pilot,
+            Scientist,
+            Weapons,
+            Engineer
+        }
+        public enum CharacterSpecies
+        {
+            General = -1,
+            Human,
+            Sylvassi,
+            Robot
+        }
+
         public readonly int vanillaTalentMaxType = 0;
         private static TalentModManager m_instance = null;
         public readonly List<TalentMod> TalentTypes = new List<TalentMod>();
@@ -45,6 +62,7 @@ namespace Talents.Framework
                         if (GetTalentIDFromName(talentModHandler.Name) == -1)
                         {
                             TalentTypes.Add(talentModHandler);
+                            TalentCreation.cachedTalents[talentModHandler.TalentAssignment].Add((ETalents)GetTalentIDFromName(talentModHandler.Name));
                             Logger.Info($"Added Talent: '{talentModHandler.Name}' with ID '{GetTalentIDFromName(talentModHandler.Name)}'");
                         }
                         else
@@ -82,7 +100,6 @@ namespace Talents.Framework
             int subtypeformodded = (int)inTalent - TalentModManager.Instance.vanillaTalentMaxType;
             if (subtypeformodded <= TalentModManager.Instance.TalentTypes.Count && subtypeformodded > -1)
             {
-                Logger.Info("Creating Talent from list info");
                 __result = TalentModManager.Instance.TalentTypes[subtypeformodded].TalentInfo;
                 return false;
             }

@@ -1,4 +1,6 @@
 ﻿
+using static Talents.Framework.TalentModManager;
+
 namespace Talents.Framework
 {
     public abstract class TalentMod
@@ -13,7 +15,8 @@ namespace Talents.Framework
         public virtual string ExtendsModdedTalent { get { return ""; } } // Use talent name so can be ID'd later
         public virtual ETalents ExtendsDefaultTalent { get { return ETalents.MAX; } }
         public virtual int MinLevel { get { return 0; } }
-        
+        public virtual (CharacterClass, CharacterSpecies) TalentAssignment { get { return ((CharacterClass)ClassID, CharacterSpecies.General); } }
+
         public virtual TalentInfo TalentInfo
         {
             get

@@ -1,16 +1,38 @@
 ﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
-using System.Reflection.Emit;
-using static PulsarModLoader.Patches.HarmonyHelpers;
-using static UIWidget;
-using UnityEngine;
-using Talents;
 using System.Linq;
+using System.Reflection.Emit;
+using System.Text;
+using System.Threading.Tasks;
+using Talents.Framework;
+using static PulsarModLoader.Patches.HarmonyHelpers;
 
-namespace TalentsImplements
+namespace TalentTest
 {
+    internal class Health_Boost_3 : TalentMod
+    {
+        public override string Name => "Health Boost III";
+        public override string Description => "+20 to max health per rank";
+        public override int MaxRank => 5;
+        public override ETalents ExtendsDefaultTalent => ETalents.HEALTH_BOOST_2;
+        public override int MinLevel => 11;
+        public override int ClassID => 0;
+        public override (TalentModManager.CharacterClass, TalentModManager.CharacterSpecies) TalentAssignment => (TalentModManager.CharacterClass.General, TalentModManager.CharacterSpecies.Human);
+    }
+    internal class Health_Boost_4 : TalentMod
+    {
+        public override string Name => "Health Boost IV";
+        public override string Description => "+20 to max health per rank";
+        public override int MaxRank => 5;
+        public override string ExtendsModdedTalent => "Health Boost III";
+        public override int MinLevel => 16;
+        public override int ClassID => 0;
+        public override (TalentModManager.CharacterClass, TalentModManager.CharacterSpecies) TalentAssignment => (TalentModManager.CharacterClass.General, TalentModManager.CharacterSpecies.Human);
+    }
+
     [HarmonyPatch(typeof(PLPawn), "Update")]
-    class HEALTH_BOOST
+    class Health_Boost_Patch
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
@@ -38,21 +60,17 @@ namespace TalentsImplements
                 ListInstructions[NextInstruction],      // num11
                 ListInstructions[NextInstruction + 1],  // Instance
                 ListInstructions[NextInstruction + 2],  // GetPlayer
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(HEALTH_BOOST), "Replacement")),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Health_Boost_Patch), "Patch")),
                 ListInstructions[NextInstruction - 1]   // Store Value
             };
             return PatchBySequence(instructions, target, patch, PatchMode.AFTER, CheckMode.NEVER);
         }
-        public static float Replacement(PLPawn Instance, float MaxHealth, PLPlayer pLPlayer)
+        public static float Patch(PLPawn Instance, float MaxHealth, PLPlayer pLPlayer)
         {
-            if (pLPlayer.Talents.Length != ETalentsPlus.MAX + 1)
-            {
-                return MaxHealth;
-            }
+            if (pLPlayer.PreviewPlayer) return MaxHealth;
             float maxHealth = MaxHealth;
-            maxHealth += (float)pLPlayer.Talents[ETalentsPlus.HEALTH_BOOST_3] * 20f;
-            maxHealth += (float)pLPlayer.Talents[ETalentsPlus.HEALTH_BOOST_4] * 20f;
-            maxHealth += (float)pLPlayer.Talents[ETalentsPlus.HEALTH_BOOST_5] * 20f;
+            maxHealth += (float)pLPlayer.Talents[TalentModManager.Instance.GetTalentIDFromName("Health Boost III")] * 20f;
+            maxHealth += (float)pLPlayer.Talents[TalentModManager.Instance.GetTalentIDFromName("Health Boost IV")] * 20f;
             return maxHealth;
         }
     }

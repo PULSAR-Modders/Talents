@@ -35,10 +35,6 @@
       <HintPath>D:\SteamLibrary\steamapps\common\PULSARLostColony\PULSAR_LostColony_Data\Managed\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="0ServerSerializeExtension">
-      <HintPath>..\..\!Lib\0ServerSerializeExtension.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="ACTk.Runtime">
       <HintPath>D:\SteamLibrary\steamapps\common\PULSARLostColony\PULSAR_LostColony_Data\Managed\ACTk.Runtime.dll</HintPath>
       <Private>False</Private>
@@ -67,6 +63,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Framework\Patches.cs" />
     <Compile Include="Framework\TalentModManager.cs" />
     <Compile Include="Rework\TalentAssign.cs" />
     <Compile Include="Rework\TalentCreation.cs" />

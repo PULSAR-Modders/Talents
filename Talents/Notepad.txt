@@ -2,3 +2,4 @@ Need to do
 - Faction specific talents
 - Skill tree implementation (Conflicting Talents etc etc)			- Talent Page
 - ? Override Default talents lock/unlock (research tree wise)
+- Hide talents for manual unlock (Talent rewards or smthn)

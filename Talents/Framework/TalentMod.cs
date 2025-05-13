@@ -1,5 +1,4 @@
-﻿
-using static Talents.Framework.TalentModManager;
+﻿using static Talents.Framework.TalentModManager;
 
 namespace Talents.Framework
 {

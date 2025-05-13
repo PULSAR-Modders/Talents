@@ -1,6 +1,11 @@
 ﻿using HarmonyLib;
 using PulsarModLoader;
+using System.Collections.Generic;
+using System.Reflection.Emit;
+using System;
 using Talents.Framework;
+using static PulsarModLoader.Patches.HarmonyHelpers;
+using static HarmonyLib.AccessTools;
 
 namespace Talents
 {
@@ -11,6 +16,25 @@ namespace Talents
         public override string Name => "Talents";
         public override string Version => "0.0.0";
     }
+
+    public class HelperMethods
+    {
+        public static IEnumerable<CodeInstruction> Override63Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            return PatchBySequence(instructions,
+            new List<CodeInstruction>()
+            {
+                new CodeInstruction(OpCodes.Ldc_I4_S, (sbyte)63),
+            },
+            new List<CodeInstruction>()
+            {
+                new CodeInstruction(OpCodes.Call, Method(typeof(HelperMethods), "Override63TranspilerPatch"))
+            },
+            PatchMode.REPLACE);
+        }
+        public static int Override63TranspilerPatch() => Enum.GetValues(typeof(ETalents)).Length + TalentModManager.Instance.TalentTypes.Count;
+    }
+
     [HarmonyPatch(typeof(PLGlobal), "Start")]
     class InjectTalents
     {
@@ -49,4 +73,4 @@ namespace Talents
                 }
             }
             */
-        }
+}

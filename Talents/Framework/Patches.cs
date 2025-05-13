@@ -47,6 +47,16 @@ namespace Talents.Framework
         }
     }
 
+    /*[HarmonyPatch(typeof(PLTabMenu), "PressTD")]
+    class rankTalentMessage
+    {
+        static void Prefix(PLTabMenu.TalentDisplay inTD)
+        {
+            TalentInfo talentInfoForTalentType = PLGlobal.GetTalentInfoForTalentType(inTD.MyType);
+            PulsarModLoader.Utilities.Messaging.Echo(PhotonTargets.All, $"RankTalent {inTD.MyType} - {talentInfoForTalentType.Name} - {talentInfoForTalentType.TalentID}");
+        }
+    }*/
+
     // Increases the array size of Talents
     [HarmonyPatch(typeof(PLPlayer), "Start")]
     class StartTalentSizePatch

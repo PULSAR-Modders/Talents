@@ -30,6 +30,7 @@ namespace Talents.Framework
                 info.WarpsToResearch = WarpsToResearch;
                 info.ExtendsTalent = ExtendsDefaultTalent;
                 int extendsModded = TalentModManager.Instance.GetTalentIDFromName(ExtendsModdedTalent);
+                info.TalentID = TalentModManager.Instance.GetTalentIDFromName(Name);
                 if (extendsModded != -1) info.ExtendsTalent = (ETalents)extendsModded;
                 info.MinLevel = MinLevel;
                 return info;

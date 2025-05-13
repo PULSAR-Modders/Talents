@@ -1,14 +1,34 @@
 ﻿using CodeStage.AntiCheat.ObscuredTypes;
 using HarmonyLib;
-using PulsarModLoader.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Emit;
+using static PulsarModLoader.Patches.HarmonyHelpers;
+using static HarmonyLib.AccessTools;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Talents.Framework
 {
+    public class HelperMethods
+    {
+        // Finds and overrides int 63 values, these are usually used to iterate to maximum talent count
+        public static IEnumerable<CodeInstruction> Override63Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            return PatchBySequence(instructions,
+            new List<CodeInstruction>()
+            {
+                new CodeInstruction(OpCodes.Ldc_I4_S, (sbyte)63),
+            },
+            new List<CodeInstruction>()
+            {
+                new CodeInstruction(OpCodes.Call, Method(typeof(HelperMethods), "Override63TranspilerPatch"))
+            },
+            PatchMode.REPLACE, showDebugOutput:true);
+        }
+        public static int Override63TranspilerPatch() => Enum.GetValues(typeof(ETalents)).Length + TalentModManager.Instance.TalentTypes.Count;
+    }
+
     // Makes new Talent Infos retrievable
     [HarmonyPatch(typeof(PLGlobal), "GetTalentInfoForTalentType")]
     class TalentInfoFix
@@ -127,9 +147,103 @@ namespace Talents.Framework
             }
         }
     }
+
     /*
      * Need to find a way to sync our list of ObscuredLongs akin to the Serialization on PLServer!!
     */
+    
+    // Patches Serialze Send to add syncing of locked talents
+    [HarmonyPatch(typeof(PLServer), "OnPhotonSerializeView")]
+    public class SyncLockedTalents
+    {
+        [HarmonyTranspiler]
+        public static IEnumerable<CodeInstruction> Transpiler_SendSync(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> instructionsList = instructions.ToList();
+            List<CodeInstruction> targetSequence = new List<CodeInstruction>()
+            {
+                new CodeInstruction(OpCodes.Ldarg_1),
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, Field(typeof(PLServer), "JumpsNeededToResearchTalent")),
+                new CodeInstruction(OpCodes.Call),
+                new CodeInstruction(OpCodes.Box),
+                new CodeInstruction(OpCodes.Callvirt, Method(typeof(PhotonStream), "SendNext")),
+                new CodeInstruction(OpCodes.Br),
+            };
+            int location = FindSequence(instructions, targetSequence, CheckMode.NONNULL);
+            return PatchBySequence(instructions,
+            targetSequence,
+            new List<CodeInstruction>()
+            {
+                instructionsList[location-7], // Ldarg_1
+                instructionsList[location-6], // Ldarg_0
+                instructionsList[location-5], // Ldfld - PLServer JumpsNeededToResearchTalent
+                instructionsList[location-4], // Call
+                instructionsList[location-3], // Box
+                instructionsList[location-2], // Callvirt - PhotonStream SendNext
+                instructionsList[location-7], // Ldarg_1
+                new CodeInstruction(OpCodes.Call, Method(typeof(SyncLockedTalents), "PatchSend")),
+                instructionsList[location-1], // Br
+            },
+            PatchMode.REPLACE, CheckMode.NONNULL);
+        }
+        public static void PatchSend(PhotonStream stream)
+        {
+            Dictionary<int, ObscuredLong> newDict = TalentModManager.Instance.extraTalentStatuses;
+            stream.SendNext(newDict.Count);
+            foreach (var kvp in newDict)
+            {
+                stream.SendNext(kvp.Key);
+                stream.SendNext((long)kvp.Value);
+            }
+        }
+
+        [HarmonyTranspiler]
+        public static IEnumerable<CodeInstruction> Transpiler_RecieveSync(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> instructionsList = instructions.ToList();
+            List<CodeInstruction> targetSequence = new List<CodeInstruction>()
+            {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldarg_1),
+                new CodeInstruction(OpCodes.Callvirt, Method(typeof(PhotonStream), "ReceiveNext")),
+                new CodeInstruction(OpCodes.Unbox_Any),
+                new CodeInstruction(OpCodes.Call),
+                new CodeInstruction(OpCodes.Stfld, Field(typeof(PLServer), "JumpsNeededToResearchTalent")),
+                new CodeInstruction(OpCodes.Br),
+            };
+            int location = FindSequence(instructions, targetSequence, CheckMode.NONNULL);
+            return PatchBySequence(instructions,
+            targetSequence,
+            new List<CodeInstruction>()
+            {
+                instructionsList[location-7], // Ldarg_0
+                instructionsList[location-6], // Ldarg_1
+                instructionsList[location-5], // Callvirt - PhotonStream ReceiveNext
+                instructionsList[location-4], // Unbox_Any
+                instructionsList[location-3], // Call
+                instructionsList[location-2], // Stfld - PLServer JumpsNeededToResearchTalent
+                instructionsList[location-6], // Ldarg_1
+                new CodeInstruction(OpCodes.Call, Method(typeof(SyncLockedTalents), "PatchRecieve")),
+                instructionsList[location-1], // Br
+            },
+            PatchMode.REPLACE, CheckMode.NONNULL);
+        }
+        public static void PatchRecieve(PhotonStream stream)
+        {
+            int count = (int)stream.ReceiveNext();
+            var newDict = new Dictionary<int, ObscuredLong>();
+
+            for (int i = 0; i < count; i++)
+            {
+                int key = (int)stream.ReceiveNext();
+                long value = (long)stream.ReceiveNext();
+                newDict[key] = value;
+            }
+
+            TalentModManager.Instance.extraTalentStatuses = newDict;
+        }
+    }
 
     /*class SyncTalentResearchStatus : PLServerSerialize
     {

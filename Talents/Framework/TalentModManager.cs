@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using PulsarModLoader.Utilities;
-using HarmonyLib;
 using CodeStage.AntiCheat.ObscuredTypes;
 
 namespace Talents.Framework

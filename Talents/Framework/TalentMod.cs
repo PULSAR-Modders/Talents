@@ -5,16 +5,50 @@ namespace Talents.Framework
     public abstract class TalentMod
     {
         public TalentMod() { }
-        public virtual string Name { get { return ""; } }
+        /// <summary>
+        /// Name of the Talent for ID-ing and appears in Research and Tab display.
+        /// </summary>
+        public abstract string Name { get; }
+        /// <summary>
+        /// Description which appears in Research and Tab display.
+        /// </summary>
         public virtual string Description { get { return ""; } }
+        /// <summary>
+        /// Maximum level Talent can be set to (Havent tested beyond 5).
+        /// </summary>
         public virtual int MaxRank { get { return 3; } }
+        /// <summary>
+        /// ClassID of Talent. Basically just puts Talent at the top of the list with the class colour.
+        /// </summary>
         public virtual int ClassID { get { return -1; } }
+        /// <summary>
+        /// Array of how many and which research materials are needed.
+        /// </summary>
         public virtual int[] ResearchCost { get { return new int[6]; } }
+        /// <summary>
+        /// Number of warps to research the talent.
+        /// </summary>
         public virtual int WarpsToResearch { get { return 3; } }
+        /// <summary>
+        /// Boolean that locks the Talent and makes it need researching.
+        /// </summary>
         public virtual bool NeedsToBeResearched { get { return false; } }
-        public virtual string ExtendsModdedTalent { get { return ""; } } // Use talent name so can be ID'd later
+        /// <summary>
+        /// Name of talent that needs to be unlocked before this one is available.
+        /// </summary>
+        public virtual string ExtendsModdedTalent { get { return ""; } }
+        /// <summary>
+        /// Name of talent that needs to be unlocked before this one is available.
+        /// </summary>
         public virtual ETalents ExtendsDefaultTalent { get { return ETalents.MAX; } }
+        /// <summary>
+        /// Minimum level required to unlock talent.
+        /// </summary>
         public virtual int MinLevel { get { return 0; } }
+        /// <summary>
+        /// ClassID and Species talent applies to. Both enumerators found in TalentModManager.
+        /// All, Captain, Pilot, Scientist, Weapons, Engineer | All, Human, Robot, Sylvassi
+        /// </summary>
         public virtual (CharacterClass, CharacterSpecies) TalentAssignment { get { return ((CharacterClass)ClassID, CharacterSpecies.General); } }
 
         public virtual TalentInfo TalentInfo

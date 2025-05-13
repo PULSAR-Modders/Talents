@@ -7,6 +7,8 @@ using static PulsarModLoader.Patches.HarmonyHelpers;
 using static HarmonyLib.AccessTools;
 using System.Linq;
 using static UnityEngine.EventSystems.EventTrigger;
+using PulsarModLoader.SaveData;
+using System.IO;
 
 namespace Talents.Framework
 {
@@ -157,12 +159,8 @@ namespace Talents.Framework
             }
         }
     }
-
-    /*
-     * Need to find a way to sync our list of ObscuredLongs akin to the Serialization on PLServer!!
-    */
     
-    // Patches Serialze Send to add syncing of locked talents
+    // Patches PLServer Serialze to add syncing of locked talents
     [HarmonyPatch(typeof(PLServer), "OnPhotonSerializeView")]
     public class SyncLockedTalents
     {
@@ -255,48 +253,49 @@ namespace Talents.Framework
         }
     }
 
-    /*class SyncTalentResearchStatus : PLServerSerialize
+    // Implements saving of locked talents
+    class LockedTalentsSaveData : PMLSaveData
     {
-        private int count = 0;
-        private int statusCount;
-        public override int Receive(object[] receiving)
+        public override string Identifier()
         {
-            switch (count)
-            {
-                case 0:
-                    statusCount = (int)receiving[0];
-                    count = 1;
-                    return statusCount * 2;
-                case 1:
-                    for (int i = 0; i < statusCount * 2; i += 2)
-                    {
-                        int key = (int)receiving[i];
-                        long value = (long)receiving[i + 1];
-                        TalentModManager.Instance.extraTalentStatuses[key] = value;
-                    }
-                    return 0;
-                default:
-                    return 0;
-            }
+            return "LockedTalentsSaveData";
         }
 
-        public override int ReceiveFirst()
+        public override void LoadData(byte[] Data, uint VersionID)
         {
-            count = 0;
-            return 1;
+            var dict = new Dictionary<int, ObscuredLong>();
+
+            using (MemoryStream ms = new MemoryStream(Data))
+            using (BinaryReader reader = new BinaryReader(ms))
+            {
+                int count = reader.ReadInt32();
+                for (int i = 0; i < count; i++)
+                {
+                    int key = reader.ReadInt32();
+                    long value = reader.ReadInt64();
+                    dict[key] = value;
+                }
+            }
+
+            TalentModManager.Instance.extraTalentStatuses = dict;
         }
 
-        public override object[] Send()
+        public override byte[] SaveData()
         {
-            List<object> result = new List<object>();
-            result.Add(TalentModManager.Instance.extraTalentStatuses.Count);
-            foreach (var status in TalentModManager.Instance.extraTalentStatuses)
+            Dictionary<int, ObscuredLong> dict = TalentModManager.Instance.extraTalentStatuses;
+
+            using (MemoryStream ms = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(ms))
             {
-                result.Add(status.Key);
-                result.Add(status.Value);
+                writer.Write(dict.Count);
+                foreach (var kvp in dict)
+                {
+                    writer.Write(kvp.Key);
+                    writer.Write((long)kvp.Value);
+                }
+                return ms.ToArray();
             }
-            return result.ToArray();
         }
-    }*/
+    }
     #endregion
 }

@@ -11,6 +11,7 @@ namespace Talents
         public override string Name => "Talents";
         public override string Version => "0.0.0";
     }
+
     [HarmonyPatch(typeof(PLGlobal), "Start")]
     class InjectTalents
     {
@@ -49,4 +50,4 @@ namespace Talents
                 }
             }
             */
-        }
+}

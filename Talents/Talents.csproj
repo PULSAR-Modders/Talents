@@ -63,12 +63,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Framework\Patches.cs" />
     <Compile Include="Framework\TalentModManager.cs" />
     <Compile Include="Rework\TalentAssign.cs" />
     <Compile Include="Rework\TalentCreation.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Framework\TalentMod.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Notepad.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

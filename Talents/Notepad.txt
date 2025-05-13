@@ -1,0 +1,8 @@
+Need to do
+3. Implement locking talents for manual unlock (Talent rewards or smthn)
+4. Callable method to retrieve Talent values (Or just thorough testing, dont want exceptions want it stable)
+5. Have talent conflicts (Have one or the other, not both. Similar to the Extend talent info)
+
+- Faction specific talents
+- Skill tree implementation
+- Ability to remove talents (If users dont want default talent system)

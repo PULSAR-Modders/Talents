@@ -1,5 +1,4 @@
-﻿
-using static Talents.Framework.TalentModManager;
+﻿using static Talents.Framework.TalentModManager;
 
 namespace Talents.Framework
 {
@@ -12,6 +11,7 @@ namespace Talents.Framework
         public virtual int ClassID { get { return -1; } }
         public virtual int[] ResearchCost { get { return new int[6]; } }
         public virtual int WarpsToResearch { get { return 3; } }
+        public virtual bool NeedsToBeResearched { get { return false; } }
         public virtual string ExtendsModdedTalent { get { return ""; } } // Use talent name so can be ID'd later
         public virtual ETalents ExtendsDefaultTalent { get { return ETalents.MAX; } }
         public virtual int MinLevel { get { return 0; } }
@@ -30,6 +30,7 @@ namespace Talents.Framework
                 info.WarpsToResearch = WarpsToResearch;
                 info.ExtendsTalent = ExtendsDefaultTalent;
                 int extendsModded = TalentModManager.Instance.GetTalentIDFromName(ExtendsModdedTalent);
+                info.TalentID = TalentModManager.Instance.GetTalentIDFromName(Name);
                 if (extendsModded != -1) info.ExtendsTalent = (ETalents)extendsModded;
                 info.MinLevel = MinLevel;
                 return info;

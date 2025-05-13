@@ -10,6 +10,14 @@ using static PulsarModLoader.Patches.HarmonyHelpers;
 
 namespace TalentTest
 {
+    internal class Researchable_Talent : TalentMod
+    {
+        public override string Name => "Research Me";
+        public override string Description => "I need to be researched";
+        public override int[] ResearchCost => new int[6] { 1, 2, 3, 4, 5, 6 };
+        public override bool NeedsToBeResearched => true;
+        public override (TalentModManager.CharacterClass, TalentModManager.CharacterSpecies) TalentAssignment => (TalentModManager.CharacterClass.General, TalentModManager.CharacterSpecies.General);
+    }
     internal class Health_Boost_3 : TalentMod
     {
         public override string Name => "Health Boost III";
@@ -69,8 +77,10 @@ namespace TalentTest
         {
             if (pLPlayer.PreviewPlayer) return MaxHealth;
             float maxHealth = MaxHealth;
-            maxHealth += (float)pLPlayer.Talents[TalentModManager.Instance.GetTalentIDFromName("Health Boost III")] * 20f;
-            maxHealth += (float)pLPlayer.Talents[TalentModManager.Instance.GetTalentIDFromName("Health Boost IV")] * 20f;
+            int boost3 = TalentModManager.Instance.GetTalentIDFromName("Health Boost III");
+            int boost4 = TalentModManager.Instance.GetTalentIDFromName("Health Boost IV");
+            if (pLPlayer.Talents.Count() > boost3) maxHealth += (float)pLPlayer.Talents[TalentModManager.Instance.GetTalentIDFromName("Health Boost III")] * 20f;
+            if (pLPlayer.Talents.Count() > boost4) maxHealth += (float)pLPlayer.Talents[TalentModManager.Instance.GetTalentIDFromName("Health Boost IV")] * 20f;
             return maxHealth;
         }
     }

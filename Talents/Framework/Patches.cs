@@ -370,14 +370,22 @@ namespace Talents.Framework
         }
         public static bool Patch(PLTabMenu instance, PLPlayer player, ETalents inTalent)
         {
-            int index = (int)inTalent / 64;
-            int bitPosition = (int)inTalent % 64;
-            if (!TalentModManager.Instance.hiddenTalentStatus.TryGetValue(index, out ObscuredLong status))
-            {
-                return true;
+            bool result = true;
+            if (Config.HideResearchableTalentsFromTab.Value && !PLServer.Instance.IsTalentUnlocked(inTalent))
+            {   // Hide Talent if hide researchable and its researchable.
+                result = false;
             }
-            long mask = 1L << bitPosition;
-            bool result = (status & mask) == 0L;
+            if (result)
+            {   // Hide Talent if hidden.
+                int index = (int)inTalent / 64;
+                int bitPosition = (int)inTalent % 64;
+                if (!TalentModManager.Instance.hiddenTalentStatus.TryGetValue(index, out ObscuredLong status))
+                {
+                    return true;
+                }
+                long mask = 1L << bitPosition;
+                result = (status & mask) == 0L;
+            }
             if (!result)
             {   // Remove talent display if its supposed to be hidden and it exists already.
                 List<PLTabMenu.TalentDisplay> allTDs = (List<PLTabMenu.TalentDisplay>)allTDsinfo.GetValue(instance);

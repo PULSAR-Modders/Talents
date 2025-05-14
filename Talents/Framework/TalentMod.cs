@@ -46,6 +46,11 @@ namespace Talents.Framework
         /// </summary>
         public virtual int MinLevel { get { return 0; } }
         /// <summary>
+        /// Talents can be hidden from the lists so that they can be hidden/not manually.
+        /// Use TalentModManager.HideTalent(int talentID) or TalentModManager.UnHideTalent(int talentID)
+        /// </summary>
+        public virtual bool HiddenByDefault { get { return false; } }
+        /// <summary>
         /// ClassID and Species talent applies to. Both enumerators found in TalentModManager.
         /// All, Captain, Pilot, Scientist, Weapons, Engineer | All, Human, Robot, Sylvassi
         /// </summary>

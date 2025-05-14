@@ -45,7 +45,8 @@ namespace Talents.Framework
         {
             vanillaTalentMaxType = Enum.GetValues(typeof(ETalents)).Length;
             Logger.Info($"Talents Vanilla MaxTypeint = {vanillaTalentMaxType - 1}");
-            extraTalentStatuses.Add(0, 0L);
+            extraTalentLockedStatus.Add(0, 0L);
+            hiddenTalentStatus.Add(0, 0L);
             foreach (PulsarMod mod in ModManager.Instance.GetAllMods())
             {
                 Assembly asm = mod.GetType().Assembly;
@@ -61,14 +62,23 @@ namespace Talents.Framework
                             int newTalentID = GetTalentIDFromName(talentModHandler.Name);
                             TalentCreation.cachedTalents[talentModHandler.TalentAssignment].Add((ETalents)newTalentID);
                             Logger.Info($"Added Talent: '{talentModHandler.Name}' with ID '{newTalentID}'");
-                            if (newTalentID / 64 >= extraTalentStatuses.Keys.Count)
+                            if (newTalentID / 64 >= extraTalentLockedStatus.Keys.Count)
                             {   // Extend the ObscureLong TalentLockedStatus for > 64 talents
-                                extraTalentStatuses.Add(extraTalentStatuses.Keys.Count, 0L);
+                                extraTalentLockedStatus.Add(extraTalentLockedStatus.Keys.Count, 0L);
                             }
                             if (talentModHandler.NeedsToBeResearched)
                             {
                                 LockTalent(newTalentID);
-                                Logger.Info($"Talent '{talentModHandler.Name}' is set to NEED TO BE RESEARCHED.");
+                                Logger.Info($"Talent '{talentModHandler.Name}' has been made researchable.");
+                            }
+                            if (newTalentID / 64 >= hiddenTalentStatus.Keys.Count)
+                            {   // Extend the ObscureLong TalentLockedStatus for > 64 talents
+                                hiddenTalentStatus.Add(hiddenTalentStatus.Keys.Count, 0L);
+                            }
+                            if (talentModHandler.HiddenByDefault)
+                            {
+                                HideTalent(newTalentID);
+                                Logger.Info($"Talent '{talentModHandler.Name}' has been hidden by default.");
                             }
                         }
                         else
@@ -98,12 +108,12 @@ namespace Talents.Framework
         }
 
         /// <summary>
-        /// ObscuredLong PLServer.TalentLockedStatus is length limited to 64. This allows that to be extended.
+        /// ObscuredLong PLServer.TalentLockedStatus is used to make talents researchable based on the bit values in the ObscuredLong and is length limited to 64. This allows that to be extended.
         /// </summary>
-        public Dictionary<int, ObscuredLong> extraTalentStatuses = new Dictionary<int, ObscuredLong>();
+        public Dictionary<int, ObscuredLong> extraTalentLockedStatus = new Dictionary<int, ObscuredLong>();
 
         /// <summary>
-        /// Sets talentID bit location in the TalentLockedStatus ObscuredLong to be locked.
+        /// Makes the talent need to be researched. (Sets talentID bit location in the TalentLockedStatus ObscuredLong to be locked)
         /// </summary>
         /// <param name="talentID">ID of Talent</param>
         public void LockTalent(int talentID)
@@ -114,12 +124,12 @@ namespace Talents.Framework
             if (index != 0) // Skip index == 0 as that is the default 64 range
             {
                 long mask = 1L << bitPosition;
-                extraTalentStatuses[index] |= mask; // Set bit to 1 (locked)
+                extraTalentLockedStatus[index] |= mask; // Set bit to 1 (locked)
             }
         }
 
         /// <summary>
-        /// Sets talentID bit location in the TalentLockedStatus ObscuredLong to be Unlocked.
+        /// Makes the talent no-longer need to be researched. (Sets talentID bit location in the TalentLockedStatus ObscuredLong to be Unlocked)
         /// </summary>
         /// <param name="talentID">ID of Talent</param>
         public void UnlockTalent(int talentID)
@@ -130,9 +140,40 @@ namespace Talents.Framework
             if (index != 0) // Skip index == 0 as that is the default 64 range
             {
                 long mask = 1L << bitPosition;
-                extraTalentStatuses[index] &= ~mask; // Set bit to 0 (unlocked)
+                extraTalentLockedStatus[index] &= ~mask; // Set bit to 0 (unlocked)
             }
         }
 
+        /// <summary>
+        /// ObscuredLong is used to make talents hidden based on the bit values in the ObscuredLong.
+        /// </summary>
+        public Dictionary<int, ObscuredLong> hiddenTalentStatus = new Dictionary<int, ObscuredLong>();
+
+        /// <summary>
+        /// Hides the talent. (Sets talentID bit location in the hideTalentStatus ObscuredLong to be locked)
+        /// </summary>
+        /// <param name="talentID">ID of Talent</param>
+        public void HideTalent(int talentID)
+        {
+            int index = talentID / 64;
+            int bitPosition = talentID % 64;
+
+            long mask = 1L << bitPosition;
+            hiddenTalentStatus[index] |= mask; // Set bit to 1 (locked)
+            
+        }
+
+        /// <summary>
+        /// Unhides the talent. (Sets talentID bit location in the hideTalentStatus ObscuredLong to be Unlocked)
+        /// </summary>
+        /// <param name="talentID">ID of Talent</param>
+        public void UnHideTalent(int talentID)
+        {
+            int index = talentID / 64;
+            int bitPosition = talentID % 64;
+
+            long mask = 1L << bitPosition;
+            hiddenTalentStatus[index] &= ~mask; // Set bit to 0 (unlocked)
+        }
     }
 }

@@ -14,8 +14,23 @@ namespace TalentTest
     {
         public override string Name => "Research Me";
         public override string Description => "I need to be researched";
-        public override int[] ResearchCost => new int[6] { 1, 2, 3, 4, 5, 6 };
+        public override int[] ResearchCost => new int[6] { 1, 0, 0, 0, 0, 0 };
         public override bool NeedsToBeResearched => true;
+        public override (TalentModManager.CharacterClass, TalentModManager.CharacterSpecies) TalentAssignment => (TalentModManager.CharacterClass.General, TalentModManager.CharacterSpecies.General);
+    }
+    internal class Revealer : TalentMod
+    {
+        public override string Name => "Revealer";
+        public override string Description => "I reveal a hidden talent!";
+        public override int MaxRank => 1;
+        public override (TalentModManager.CharacterClass, TalentModManager.CharacterSpecies) TalentAssignment => (TalentModManager.CharacterClass.General, TalentModManager.CharacterSpecies.General);
+    }
+    internal class Hidden : TalentMod
+    {
+        public override string Name => "Hidden";
+        public override string Description => "I was hiding!";
+        public override int MaxRank => 0;
+        public override bool HiddenByDefault => true;
         public override (TalentModManager.CharacterClass, TalentModManager.CharacterSpecies) TalentAssignment => (TalentModManager.CharacterClass.General, TalentModManager.CharacterSpecies.General);
     }
     internal class Health_Boost_3 : TalentMod
@@ -81,6 +96,8 @@ namespace TalentTest
             int boost4 = TalentModManager.Instance.GetTalentIDFromName("Health Boost IV");
             if (pLPlayer.Talents.Count() > boost3) maxHealth += (float)pLPlayer.Talents[TalentModManager.Instance.GetTalentIDFromName("Health Boost III")] * 20f;
             if (pLPlayer.Talents.Count() > boost4) maxHealth += (float)pLPlayer.Talents[TalentModManager.Instance.GetTalentIDFromName("Health Boost IV")] * 20f;
+            int boost5 = TalentModManager.Instance.GetTalentIDFromName("Revealer");
+            if (pLPlayer.Talents.Count() > boost5 && pLPlayer.Talents[boost5] > 0) TalentModManager.Instance.UnHideTalent(TalentModManager.Instance.GetTalentIDFromName("Hidden"));
             return maxHealth;
         }
     }

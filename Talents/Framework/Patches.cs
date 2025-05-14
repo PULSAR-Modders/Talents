@@ -9,6 +9,8 @@ using System.Linq;
 using static UnityEngine.EventSystems.EventTrigger;
 using PulsarModLoader.SaveData;
 using System.IO;
+using System.Reflection;
+using PulsarModLoader.Utilities;
 
 namespace Talents.Framework
 {
@@ -71,6 +73,16 @@ namespace Talents.Framework
         }
     }
 
+    // Allows new Talents to be synced with joining players
+    [HarmonyPatch(typeof(PLPlayer), "SendTalentsToPhotonTargets")]
+    public class TalentSerializePatch
+    {
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) => HelperMethods.Override63Transpiler(instructions);
+    }
+
+    // Talents are unlocked based on the synced ObscuredLong this.TalentLockedStatus - Each bit represents one of the 64 talents, 1 = locked 0 = unlocked.
+    // Since we are adding talents >64 we need to add to check and create our own ObscuredLong.
+    #region Researchable/Not Talents
     // Allows new Talents to be researchable
     [HarmonyPatch(typeof(PLShipInfo), "UpdateResearchTalentChoices")]
     public class ResearchTalentSizePatch
@@ -84,16 +96,6 @@ namespace Talents.Framework
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) => HelperMethods.Override63Transpiler(instructions);
     }
 
-    // Allows new Talents to be synced with joining players
-    [HarmonyPatch(typeof(PLPlayer), "SendTalentsToPhotonTargets")]
-    public class TalentSerializePatch
-    {
-        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) => HelperMethods.Override63Transpiler(instructions);
-    }
-
-    // Talents are unlocked based on the synced ObscuredLong this.TalentLockedStatus - Each bit represents one of the 64 talents, 1 = locked 0 = unlocked.
-    // Since we are adding talents >64 we need to add to check and create our own ObscuredLong.
-    #region Lock/Unlock Talents
     [HarmonyPatch(typeof(PLServer), "IsTalentUnlocked")]
     class ExtendIsTalentUnlocked
     {
@@ -104,7 +106,7 @@ namespace Talents.Framework
             if (index == 0) return true;
             else
             {
-                if (!TalentModManager.Instance.extraTalentStatuses.TryGetValue(index, out ObscuredLong status))
+                if (!TalentModManager.Instance.extraTalentLockedStatus.TryGetValue(index, out ObscuredLong status))
                 {
                     __result = true;
                     return false;
@@ -130,12 +132,12 @@ namespace Talents.Framework
             }
             else
             {
-                if (!TalentModManager.Instance.extraTalentStatuses.TryGetValue(index, out ObscuredLong status))
+                if (!TalentModManager.Instance.extraTalentLockedStatus.TryGetValue(index, out ObscuredLong status))
                 {
                     return false;
                 }
                 long mask = 1L << bitPosition;
-                TalentModManager.Instance.extraTalentStatuses[index] &= ~mask; // Set bit to 0 (unlocked)
+                TalentModManager.Instance.extraTalentLockedStatus[index] &= ~mask; // Set bit to 0 (unlocked)
                 return false;
             }
         }
@@ -146,20 +148,71 @@ namespace Talents.Framework
     {
         static void Postfix()
         {
-            for (int i = 0; i < TalentModManager.Instance.extraTalentStatuses.Count; i++)
+            for (int i = 0; i < TalentModManager.Instance.extraTalentLockedStatus.Count; i++)
             {
-                TalentModManager.Instance.extraTalentStatuses[i] = 0L;
+                TalentModManager.Instance.extraTalentLockedStatus[i] = 0L;
+            }
+            for (int i = 0; i < TalentModManager.Instance.hiddenTalentStatus.Count; i++)
+            {
+                TalentModManager.Instance.hiddenTalentStatus[i] = 0L;
             }
             foreach (TalentMod talentMod in TalentModManager.Instance.TalentTypes)
             {
-                if (talentMod != null && talentMod.NeedsToBeResearched)
+                if (talentMod != null)
                 {
-                    TalentModManager.Instance.LockTalent(TalentModManager.Instance.GetTalentIDFromName(talentMod.Name));
+                    if (talentMod.NeedsToBeResearched) TalentModManager.Instance.LockTalent(TalentModManager.Instance.GetTalentIDFromName(talentMod.Name));
+                    if (talentMod.HiddenByDefault) TalentModManager.Instance.HideTalent(TalentModManager.Instance.GetTalentIDFromName(talentMod.Name));
                 }
             }
         }
     }
-    
+
+    // Implements saving of locked talents
+    class LockedTalentsSaveData : PMLSaveData
+    {
+        public override string Identifier()
+        {
+            return "LockedTalentsSaveData";
+        }
+
+        public override void LoadData(byte[] Data, uint VersionID)
+        {
+            var dict = new Dictionary<int, ObscuredLong>();
+
+            using (MemoryStream ms = new MemoryStream(Data))
+            using (BinaryReader reader = new BinaryReader(ms))
+            {
+                int count = reader.ReadInt32();
+                for (int i = 0; i < count; i++)
+                {
+                    int key = reader.ReadInt32();
+                    long value = reader.ReadInt64();
+                    dict[key] = value;
+                }
+            }
+
+            TalentModManager.Instance.extraTalentLockedStatus = dict;
+        }
+
+        public override byte[] SaveData()
+        {
+            Dictionary<int, ObscuredLong> dict = TalentModManager.Instance.extraTalentLockedStatus;
+
+            using (MemoryStream ms = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(ms))
+            {
+                writer.Write(dict.Count);
+                foreach (var kvp in dict)
+                {
+                    writer.Write(kvp.Key);
+                    writer.Write((long)kvp.Value);
+                }
+                return ms.ToArray();
+            }
+        }
+    }
+    #endregion
+
     // Patches PLServer Serialze to add syncing of locked talents
     [HarmonyPatch(typeof(PLServer), "OnPhotonSerializeView")]
     public class SyncLockedTalents
@@ -197,7 +250,17 @@ namespace Talents.Framework
         }
         public static void PatchSend(PhotonStream stream)
         {
-            Dictionary<int, ObscuredLong> newDict = TalentModManager.Instance.extraTalentStatuses;
+            /// Send extraTalentLockedStatus
+            Dictionary<int, ObscuredLong> newDict = TalentModManager.Instance.extraTalentLockedStatus;
+            stream.SendNext(newDict.Count);
+            foreach (var kvp in newDict)
+            {
+                stream.SendNext(kvp.Key);
+                stream.SendNext((long)kvp.Value);
+            }
+
+            /// Send hiddenTalentStatus
+            newDict = TalentModManager.Instance.hiddenTalentStatus;
             stream.SendNext(newDict.Count);
             foreach (var kvp in newDict)
             {
@@ -232,13 +295,14 @@ namespace Talents.Framework
                 instructionsList[location-3], // Call
                 instructionsList[location-2], // Stfld - PLServer JumpsNeededToResearchTalent
                 instructionsList[location-6], // Ldarg_1
-                new CodeInstruction(OpCodes.Call, Method(typeof(SyncLockedTalents), "PatchRecieve")),
+                new CodeInstruction(OpCodes.Call, Method(typeof(SyncLockedTalents), "PatchReceive")),
                 instructionsList[location-1], // Br
             },
             PatchMode.REPLACE, CheckMode.NONNULL);
         }
-        public static void PatchRecieve(PhotonStream stream)
+        public static void PatchReceive(PhotonStream stream)
         {
+            /// Receive extraTalentLockedStatus
             int count = (int)stream.ReceiveNext();
             var newDict = new Dictionary<int, ObscuredLong>();
 
@@ -249,16 +313,114 @@ namespace Talents.Framework
                 newDict[key] = value;
             }
 
-            TalentModManager.Instance.extraTalentStatuses = newDict;
+            TalentModManager.Instance.extraTalentLockedStatus = newDict;
+
+            /// Receive hiddenTalentStatus
+            count = (int)stream.ReceiveNext();
+            newDict = new Dictionary<int, ObscuredLong>();
+
+            for (int i = 0; i < count; i++)
+            {
+                int key = (int)stream.ReceiveNext();
+                long value = (long)stream.ReceiveNext();
+                newDict[key] = value;
+            }
+
+            TalentModManager.Instance.hiddenTalentStatus = newDict;
         }
     }
 
-    // Implements saving of locked talents
-    class LockedTalentsSaveData : PMLSaveData
+    // Could be useful to have Talents as a purchaseable or reward item. This implements the Hide/Unhide system using the same logic as the Researchable/Not system
+    #region Hidden/Not Talents
+    [HarmonyPatch(typeof(PLTabMenu), "UpdateTDs")]
+    public class HideTalentsFromTabMenu
+    {
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> instructionsList = instructions.ToList();
+            List<CodeInstruction> targetSequence = new List<CodeInstruction>()
+            {
+                new CodeInstruction(OpCodes.Ldloc_S),
+                new CodeInstruction(OpCodes.Ldfld, Field(typeof(TalentInfo), "MaxRank")),
+                new CodeInstruction(OpCodes.Bge_S),
+                new CodeInstruction(OpCodes.Ldloc_S),
+                new CodeInstruction(OpCodes.Ldfld),
+                new CodeInstruction(OpCodes.Ldc_I4_0),
+                new CodeInstruction(OpCodes.Stfld, Field(typeof(PLTabMenu.TalentDisplay), "Available")),
+                new CodeInstruction(OpCodes.Ldloc_S),
+            };
+            int location = FindSequence(instructions, targetSequence, CheckMode.NONNULL);
+            targetSequence = new List<CodeInstruction>()
+            {
+                new CodeInstruction(OpCodes.Ldloc_S),
+                new CodeInstruction(OpCodes.Call, Method(typeof(PLGlobal), "GetTalentInfoForTalentType")),
+                new CodeInstruction(OpCodes.Stloc_S),
+            };
+            int location2 = FindSequence(instructions, targetSequence, CheckMode.NONNULL);
+            return PatchBySequence(instructions, targetSequence,
+            new List<CodeInstruction>()
+            {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                instructionsList[location2 + 3], // ldloc_s playerfromplayerid
+                instructionsList[location2 - 3], // ldloc_s etalents
+                new CodeInstruction(OpCodes.Call, Method(typeof(HideTalentsFromTabMenu), "Patch")),
+                new CodeInstruction(OpCodes.Brfalse, instructionsList[location - 6].operand) // branch to ldloc_s 533
+            },
+            PatchMode.AFTER, CheckMode.NONNULL);
+        }
+        public static bool Patch(PLTabMenu instance, PLPlayer player, ETalents inTalent)
+        {
+            int index = (int)inTalent / 64;
+            int bitPosition = (int)inTalent % 64;
+            if (!TalentModManager.Instance.hiddenTalentStatus.TryGetValue(index, out ObscuredLong status))
+            {
+                return true;
+            }
+            long mask = 1L << bitPosition;
+            bool result = (status & mask) == 0L;
+            if (!result)
+            {   // Remove talent display if its supposed to be hidden and it exists already.
+                List<PLTabMenu.TalentDisplay> allTDs = (List<PLTabMenu.TalentDisplay>)allTDsinfo.GetValue(instance);
+                for (int i = 0; i < allTDs.Count; i++)
+                {
+                    PLTabMenu.TalentDisplay talentDisplay = allTDs[i];
+                    if (talentDisplay.MyType == inTalent && talentDisplay.Player == player)
+                    {
+                        allTDs.RemoveAt(i);
+                        break;
+                    }
+                }
+                allTDsinfo.SetValue(instance, allTDs);
+            }
+            return result;
+            //PulsarModLoader.Utilities.Logger.Info($"[IsTalentUnlocked] {inTalent} = {__result}");
+        }
+        private static FieldInfo allTDsinfo = AccessTools.Field(typeof(PLTabMenu), "allTDs");
+    }
+
+    [HarmonyPatch(typeof(PLGlobal), "IsTalentVisibleForResearch")]
+    class HideFromResearchList
+    {
+        static void Postfix(ETalents inTalent, ref bool __result)
+        {
+            if (!__result) return;
+            int index = (int)inTalent / 64;
+            int bitPosition = (int)inTalent % 64;
+            if (!TalentModManager.Instance.hiddenTalentStatus.TryGetValue(index, out ObscuredLong status))
+            {
+                return;
+            }
+            long mask = 1L << bitPosition;
+            __result = (status & mask) == 0L;
+        }
+    }
+
+    // Implements saving of hidden/not talents
+    class HiddenTalentsSaveData : PMLSaveData
     {
         public override string Identifier()
         {
-            return "LockedTalentsSaveData";
+            return "HiddenTalentsSaveData";
         }
 
         public override void LoadData(byte[] Data, uint VersionID)
@@ -277,12 +439,12 @@ namespace Talents.Framework
                 }
             }
 
-            TalentModManager.Instance.extraTalentStatuses = dict;
+            TalentModManager.Instance.hiddenTalentStatus = dict;
         }
 
         public override byte[] SaveData()
         {
-            Dictionary<int, ObscuredLong> dict = TalentModManager.Instance.extraTalentStatuses;
+            Dictionary<int, ObscuredLong> dict = TalentModManager.Instance.hiddenTalentStatus;
 
             using (MemoryStream ms = new MemoryStream())
             using (BinaryWriter writer = new BinaryWriter(ms))
@@ -297,5 +459,5 @@ namespace Talents.Framework
             }
         }
     }
-    #endregion
+    #endregion 
 }

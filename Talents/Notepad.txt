@@ -1,7 +1,8 @@
 Need to do
+- Change talent ID system to use a unique name akin to ETalents names. 
+(Will allow different talents that can look like eachother, can make different faction and species descriptions and that)
 4. Callable method to retrieve Talent values (Or just thorough testing, dont want exceptions want it stable)
 5. Have talent conflicts (Have one or the other, not both. Similar to the Extend talent info)
 
 - Faction specific talents
 - Skill tree implementation
-- Ability to remove talents (If users dont want default talent system)

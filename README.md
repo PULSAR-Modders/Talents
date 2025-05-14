@@ -2,6 +2,7 @@
 
 Function: Extends and improves the current Talent system.
 
+## Creation
 Create and override the following abstract class to add your own Talent.
 ```c#
 public abstract class TalentMod
@@ -228,4 +229,12 @@ It can then be manually hidden/not with:
 TalentModManager.Instance.HideTalent(int talentID)
 TalentModManager.Instance.UnHideTalent(int talentID)
 ```
+
+**You can hide the existing talents, but if they have a perk by default, you will have to remove the perk point if you do not want it to still be in-effect**
 </details>
+
+## Future
+- [ ] Faction specific talents.
+- [ ] Change talent ID system to use a unique name akin to ETalents names (Will allow different talents that can look like eachother, can make different faction and species descriptions and that)
+- [ ] Callable method to retrieve Talent values (Or just thorough testing of the current system, want it to be robust)
+- [ ] Have talent conflicts (Have one talent or the other talent, not both)

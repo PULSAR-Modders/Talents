@@ -180,7 +180,7 @@ namespace Talents.Framework
 
     // Saving and syncing of extended talents data such as: Locked status, Hidden status
     #region TalentsDataHandling
-    // Implements saving talent info
+    // Implements saving
     class SaveTalentsData : PMLSaveData
     {
         public static bool HasLoadedElements = false;
@@ -247,7 +247,7 @@ namespace Talents.Framework
         }
     }
 
-    // Patches PLServer Serialze to add syncing of locked talents
+    // Patches PLServer Serialze to add syncing
     [HarmonyPatch(typeof(PLServer), "OnPhotonSerializeView")]
     public class SyncTalentsData
     {

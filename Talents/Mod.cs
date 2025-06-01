@@ -12,7 +12,7 @@ namespace Talents
         public override string HarmonyIdentifier() => "Mest.Talents";
         public override string Author => "Mest";
         public override string Name => "Talents";
-        public override string Version => "0.0.0";
+        public override string Version => "0.0.1";
     }
 
     [HarmonyPatch(typeof(PLGlobal), "Start")]

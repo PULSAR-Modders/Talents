@@ -28,7 +28,7 @@ namespace Talents.Framework
             {
                 new CodeInstruction(OpCodes.Call, Method(typeof(HelperMethods), "Override63TranspilerPatch"))
             },
-            PatchMode.REPLACE, showDebugOutput:true);
+            PatchMode.REPLACE);
         }
         public static int Override63TranspilerPatch() => Enum.GetValues(typeof(ETalents)).Length + TalentModManager.Instance.TalentTypes.Count;
     }
@@ -143,11 +143,21 @@ namespace Talents.Framework
         }
     }
 
+    [HarmonyPatch(typeof(PLUIPlayMenu), "Enter")]
+    class ResetPatch
+    {
+        static void Prefix()
+        {
+            SaveTalentsData.HasLoadedElements = false;
+        }
+    }
+
     [HarmonyPatch(typeof(PLServer), "ResetTalentLockedStatus")]
     class ExtendResetTalentLockedStatus
     {
         static void Postfix()
         {
+            if (SaveTalentsData.HasLoadedElements) return;
             for (int i = 0; i < TalentModManager.Instance.extraTalentLockedStatus.Count; i++)
             {
                 TalentModManager.Instance.extraTalentLockedStatus[i] = 0L;
@@ -166,19 +176,22 @@ namespace Talents.Framework
             }
         }
     }
+    #endregion
 
-    // Implements saving of locked talents
-    class LockedTalentsSaveData : PMLSaveData
+    // Saving and syncing of extended talents data such as: Locked status, Hidden status
+    #region TalentsDataHandling
+    // Implements saving talent info
+    class SaveTalentsData : PMLSaveData
     {
+        public static bool HasLoadedElements = false;
         public override string Identifier()
         {
-            return "LockedTalentsSaveData";
+            return "TalentsSaveData";
         }
 
         public override void LoadData(byte[] Data, uint VersionID)
         {
             var dict = new Dictionary<int, ObscuredLong>();
-
             using (MemoryStream ms = new MemoryStream(Data))
             using (BinaryReader reader = new BinaryReader(ms))
             {
@@ -187,20 +200,42 @@ namespace Talents.Framework
                 {
                     int key = reader.ReadInt32();
                     long value = reader.ReadInt64();
-                    dict[key] = value;
+                    if (!dict.ContainsKey(key)) dict.Add(key, value);
+                    else
+                    {
+                        dict[key] = value;
+                    }
                 }
+                TalentModManager.Instance.extraTalentLockedStatus = dict;
+                count = reader.ReadInt32();
+                for (int i = 0; i < count; i++)
+                {
+                    int key = reader.ReadInt32();
+                    long value = reader.ReadInt64();
+                    if (!dict.ContainsKey(key)) dict.Add(key, value);
+                    else
+                    {
+                        dict[key] = value;
+                    }
+                }
+                TalentModManager.Instance.extraTalentLockedStatus = dict;
             }
-
-            TalentModManager.Instance.extraTalentLockedStatus = dict;
+            HasLoadedElements = true;
         }
 
         public override byte[] SaveData()
         {
-            Dictionary<int, ObscuredLong> dict = TalentModManager.Instance.extraTalentLockedStatus;
-
             using (MemoryStream ms = new MemoryStream())
             using (BinaryWriter writer = new BinaryWriter(ms))
             {
+                Dictionary<int, ObscuredLong> dict = TalentModManager.Instance.extraTalentLockedStatus;
+                writer.Write(dict.Count);
+                foreach (var kvp in dict)
+                {
+                    writer.Write(kvp.Key);
+                    writer.Write((long)kvp.Value);
+                }
+                dict = TalentModManager.Instance.hiddenTalentStatus;
                 writer.Write(dict.Count);
                 foreach (var kvp in dict)
                 {
@@ -211,11 +246,10 @@ namespace Talents.Framework
             }
         }
     }
-    #endregion
 
     // Patches PLServer Serialze to add syncing of locked talents
     [HarmonyPatch(typeof(PLServer), "OnPhotonSerializeView")]
-    public class SyncLockedTalents
+    public class SyncTalentsData
     {
         [HarmonyTranspiler]
         public static IEnumerable<CodeInstruction> Transpiler_SendSync(IEnumerable<CodeInstruction> instructions)
@@ -243,7 +277,7 @@ namespace Talents.Framework
                 instructionsList[location-3], // Box
                 instructionsList[location-2], // Callvirt - PhotonStream SendNext
                 instructionsList[location-7], // Ldarg_1
-                new CodeInstruction(OpCodes.Call, Method(typeof(SyncLockedTalents), "PatchSend")),
+                new CodeInstruction(OpCodes.Call, Method(typeof(SyncTalentsData), "PatchSend")),
                 instructionsList[location-1], // Br
             },
             PatchMode.REPLACE, CheckMode.NONNULL);
@@ -295,7 +329,7 @@ namespace Talents.Framework
                 instructionsList[location-3], // Call
                 instructionsList[location-2], // Stfld - PLServer JumpsNeededToResearchTalent
                 instructionsList[location-6], // Ldarg_1
-                new CodeInstruction(OpCodes.Call, Method(typeof(SyncLockedTalents), "PatchReceive")),
+                new CodeInstruction(OpCodes.Call, Method(typeof(SyncTalentsData), "PatchReceive")),
                 instructionsList[location-1], // Br
             },
             PatchMode.REPLACE, CheckMode.NONNULL);
@@ -329,6 +363,7 @@ namespace Talents.Framework
             TalentModManager.Instance.hiddenTalentStatus = newDict;
         }
     }
+#endregion
 
     // Could be useful to have Talents as a purchaseable or reward item. This implements the Hide/Unhide system using the same logic as the Researchable/Not system
     #region Hidden/Not Talents
@@ -420,51 +455,6 @@ namespace Talents.Framework
             }
             long mask = 1L << bitPosition;
             __result = (status & mask) == 0L;
-        }
-    }
-
-    // Implements saving of hidden/not talents
-    class HiddenTalentsSaveData : PMLSaveData
-    {
-        public override string Identifier()
-        {
-            return "HiddenTalentsSaveData";
-        }
-
-        public override void LoadData(byte[] Data, uint VersionID)
-        {
-            var dict = new Dictionary<int, ObscuredLong>();
-
-            using (MemoryStream ms = new MemoryStream(Data))
-            using (BinaryReader reader = new BinaryReader(ms))
-            {
-                int count = reader.ReadInt32();
-                for (int i = 0; i < count; i++)
-                {
-                    int key = reader.ReadInt32();
-                    long value = reader.ReadInt64();
-                    dict[key] = value;
-                }
-            }
-
-            TalentModManager.Instance.hiddenTalentStatus = dict;
-        }
-
-        public override byte[] SaveData()
-        {
-            Dictionary<int, ObscuredLong> dict = TalentModManager.Instance.hiddenTalentStatus;
-
-            using (MemoryStream ms = new MemoryStream())
-            using (BinaryWriter writer = new BinaryWriter(ms))
-            {
-                writer.Write(dict.Count);
-                foreach (var kvp in dict)
-                {
-                    writer.Write(kvp.Key);
-                    writer.Write((long)kvp.Value);
-                }
-                return ms.ToArray();
-            }
         }
     }
     #endregion 
